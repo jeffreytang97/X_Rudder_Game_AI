@@ -24,6 +24,8 @@ def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
     test_example()
     print_board()
+    entry_selection()
+    addCoordinate()
 
 # function to print/reset(?) the board
 def print_board():
@@ -339,5 +341,14 @@ def print_board():
         if increment % 12 == 0:
             print('')
         increment += 1
+
+def entry_selection():
+    #Human VS Human, Human VS Algorithm
+    print("lmao help")
+    
+def addCoordinate():
+    #Get user input stream and add coodrinates onto board
+    #Has to alternated between X and O
+    print("It's gonna be fun")
 
 run_Game_Main_Function()
