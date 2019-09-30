@@ -24,9 +24,9 @@ def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
     test_example()
     Board = BoardClass()
-    Board.create_board
-    Board.print_board
-    #Board.playerChoice()
+    Board.create_board()
+    Board.print_board()
+    Board.playerChoice()
 
 class BoardClass:
     def __init__(self):
@@ -370,15 +370,16 @@ class BoardClass:
             print("Playing against player, the first player will be X, the second player will be O \n")
             moves = 0
             while moves < 30:
-                #If "moves" is even, it's player 1, so X. Else it's O
+                #If "moves" is even X (Player 1). Else it's O
                 coordinate = input("Please input your coordinate: \n")
                 if moves % 2 == 0:
                     token = "X"
                     self.coordinate_selection(coordinate, token)
+                    moves += 1
                 else:
                     token = "O"
                     self.coordinate_selection(coordinate, token)
-            
+                    moves += 1
         else:
             print("Playing against computer \n")
     
@@ -387,11 +388,12 @@ class BoardClass:
         dict = self.board
         flag = True
         
+        #while Flag is false, ask user to enter valid coordinates
         while flag:
             
-            #If coordinate exist in Dictionary
+            #If coordinate key exist in Dictionary
             if coordinate in dict:
-#                #Check if it has already a token in that coordinate
+#                #Check if the coordinate has already a value (X or O)
                 if dict.get(coordinate) is "_":
                     flag = False
                 else:
@@ -405,7 +407,7 @@ class BoardClass:
        
         #Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
-        self.print_board
+        self.print_board()
     
     def addCoordinate(self, coordinate, token):
         #Get user input stream and add coodrinates onto board
