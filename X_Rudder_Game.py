@@ -24,7 +24,9 @@ def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
     test_example()
     Board = BoardClass()
-    Board.playerChoice()
+    Board.create_board
+    Board.print_board
+    #Board.playerChoice()
 
 class BoardClass:
     def __init__(self):
@@ -364,7 +366,6 @@ class BoardClass:
     def playerChoice(self):
         choice = input("Press 1 to player against another player. Press any to play against the computer: \n")
         
-        self.create_board()
         if choice is "1":
             print("Playing against player, the first player will be X, the second player will be O \n")
             moves = 0
