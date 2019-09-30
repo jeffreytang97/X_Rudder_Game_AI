@@ -26,13 +26,15 @@ def run_Game_Main_Function():
     Board = BoardClass()
     Board.create_board()
     Board.print_board()
-    #entry_selection()
+    coordinate = input("Please enter a coordinate")
+    Board.coordinate_selection(coordinate)
+    #entry_selection()        
     Board.addCoordinate("A1", "X")
     Board.print_board()
 
 class BoardClass:
     def __init__(self):
-        print("This is the board")
+        print("Here is the board")
     
         # function to print/reset(?) the board
     def create_board(self):
@@ -365,20 +367,31 @@ class BoardClass:
                 print('')
             increment += 1
     
-    def entry_selection(self):
+    def coordinate_selection(self, coordinate):
         #Human VS Human, Human VS Algorithm
-        print("lmao help")
+        print(self.board.keys())
+        dictKeys = self.board.keys()
+        flag = True
+        
+        while flag:
+            for i in dictKeys:
+                if coordinate is i:
+                    flag = False
+                    break
+                else:
+                    flag = True
+            if flag:
+                coordinate = input("Please enter a valid coordinate: /n")
+        
+    
     
     def addCoordinate(self, coordinate, token):
         #Get user input stream and add coodrinates onto board
         #Has to alternated between X and O
         print("It's gonna be fun")
         # changed the board so that you no longer need to check for tiles with "1 |"
-#        if coordinate is "A1" or "A2" or "A3" or "A4" or "A5" or "A6" or "A7" or "A8" or "A9" or "A10":
-#            self.board[coordinate] = "1 |" + token
-#        else:
-#            self.board[coordinate] = token
-        self.board["B2"] = "X"
+#        
+        self.board[coordinate] = token
 
 
 run_Game_Main_Function()
