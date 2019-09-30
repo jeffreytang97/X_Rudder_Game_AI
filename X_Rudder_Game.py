@@ -24,13 +24,7 @@ def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
     test_example()
     Board = BoardClass()
-    Board.create_board()
-    Board.print_board()
-    coordinate = input("Please enter a coordinate")
-    Board.coordinate_selection(coordinate)
-    #entry_selection()        
-    Board.addCoordinate("A1", "X")
-    Board.print_board()
+    Board.playerChoice()
 
 class BoardClass:
     def __init__(self):
@@ -367,30 +361,56 @@ class BoardClass:
                 print('')
             increment += 1
     
-    def coordinate_selection(self, coordinate):
+    def playerChoice(self):
+        choice = input("Press 1 to player against another player. Press any to play against the computer: \n")
+        
+        self.create_board()
+        if choice is "1":
+            print("Playing against player, the first player will be X, the second player will be O \n")
+            moves = 0
+            while moves < 30:
+                #If "moves" is even, it's player 1, so X. Else it's O
+                coordinate = input("Please input your coordinate: \n")
+                if moves % 2 == 0:
+                    token = "X"
+                    self.coordinate_selection(coordinate, token)
+                else:
+                    token = "O"
+                    self.coordinate_selection(coordinate, token)
+            
+        else:
+            print("Playing against computer \n")
+    
+    def coordinate_selection(self, coordinate, token):
         #Human VS Human, Human VS Algorithm
-        print(self.board.keys())
-        dictKeys = self.board.keys()
+        dict = self.board
         flag = True
         
         while flag:
-            for i in dictKeys:
-                if coordinate is i:
+            
+            #If coordinate exist in Dictionary
+            if coordinate in dict:
+#                #Check if it has already a token in that coordinate
+                if dict.get(coordinate) is "_":
                     flag = False
-                    break
                 else:
                     flag = True
-            if flag:
-                coordinate = input("Please enter a valid coordinate: /n")
-        
-    
+            else:
+                flag = True
+            
+            if flag is True:
+                coordinate = input("Please enter a valid coordinate: \n")
+                
+       
+        #Calling member function within a class, gotta use self
+        self.addCoordinate(coordinate, token)
+        self.print_board
     
     def addCoordinate(self, coordinate, token):
         #Get user input stream and add coodrinates onto board
         #Has to alternated between X and O
-        print("It's gonna be fun")
         # changed the board so that you no longer need to check for tiles with "1 |"
-#        
+
         self.board[coordinate] = token
 
 
