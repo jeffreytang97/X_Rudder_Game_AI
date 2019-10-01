@@ -390,6 +390,7 @@ class BoardClass:
         dict = self.board
         flag = True
         count = 0
+        
         #while Flag is false, ask user to enter valid coordinates
         while flag:
             
@@ -402,12 +403,14 @@ class BoardClass:
                     flag = True
             else:
                 flag = True
-            
+
             if flag is True:
-                coordinate = input("Please enter a valid coordinate: \n")
+                coordinate = input("Please enter a valid coordinate: \n")    
+                
             if count > 3:
                 raise Exception ('exit')
-            count += 1  
+            count += 1
+            
        
         #Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
