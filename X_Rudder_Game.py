@@ -16,6 +16,9 @@ Author:
 PS: We should create a main function to run all the functions required instead of calling each function one by one.
 
 """
+
+import sys
+
 # Just an example
 def test_example():
     print("Welcome to X-Rudder game!AHHHHH")
@@ -369,53 +372,54 @@ class BoardClass:
         if choice is "1":
             print("Playing against player, the first player will be X, the second player will be O \n")
             moves = 0
+            
             while moves < 30:
-                #If "moves" is even X (Player 1). Else it's O
-                coordinate = input("Please input your coordinate: \n")
-                if moves % 2 == 0:
-                    token = "X"
-                    self.coordinate_selection(coordinate, token)
-                    moves += 1
-                else:
-                    token = "O"
-                    self.coordinate_selection(coordinate, token)
-                    moves += 1
-            print("All 30 moves has been used. Exiting the game")
+                try:
+                    #If "moves" is even X (Player 1). Else it's O
+                    if moves % 2 == 0:
+                        coordinate = input("Please input your coordinate (X's turn): \n")
+                        token = "X"
+                        self.coordinate_selection(coordinate, token)
+                        moves += 1
+                    else:
+                        coordinate = input("Please input your coordinate (O's turn): \n")
+                        token = "O"
+                        self.coordinate_selection(coordinate, token)
+                        moves += 1
+                        
+                except KeyboardInterrupt:
+                        print('Keyboard interrupt CTRL+C')
+                        sys.exit(0)
+                        
+            print("All 30 moves has been used. Exiting the game")       # Tie game
             raise Exception ('exit')
+1
         else:
             print("Playing against computer \n")
     
     def coordinate_selection(self, coordinate, token):
         #Human VS Human, Human VS Algorithm
-        dict = self.board
+        dict = self.board          
         flag = True
-        count = 0
         
-        #while Flag is false, ask user to enter valid coordinates
+        # while Flag is true, ask user to enter valid coordinates
+        # when flag becomes false, add X or O on the board and continue with next player's turn
         while flag:
-            
             #If coordinate key exist in Dictionary
             if coordinate in dict:
-#                #Check if the coordinate has already a value (X or O)
+                #Check if the coordinate has already a value (X or O)
                 if dict.get(coordinate) is "_":
                     flag = False
                 else:
                     flag = True
-            else:
-                flag = True
-
+     
             if flag is True:
-                coordinate = input("Please enter a valid coordinate: \n")    
-                
-            if count > 3:
-                raise Exception ('exit')
-            count += 1
-            
+                coordinate = input("Please enter a valid coordinate: \n")  
        
-        #Calling member function within a class, gotta use self
+        # Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
         self.print_board()
-    
+        
     def addCoordinate(self, coordinate, token):
         #Get user input stream and add coodrinates onto board
         #Has to alternated between X and O
