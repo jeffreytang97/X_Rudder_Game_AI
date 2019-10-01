@@ -380,6 +380,8 @@ class BoardClass:
                     token = "O"
                     self.coordinate_selection(coordinate, token)
                     moves += 1
+            print("All 30 moves has been used. Exiting the game")
+            raise Exception ('exit')
         else:
             print("Playing against computer \n")
     
@@ -387,7 +389,7 @@ class BoardClass:
         #Human VS Human, Human VS Algorithm
         dict = self.board
         flag = True
-        
+        count = 0
         #while Flag is false, ask user to enter valid coordinates
         while flag:
             
@@ -403,7 +405,9 @@ class BoardClass:
             
             if flag is True:
                 coordinate = input("Please enter a valid coordinate: \n")
-                
+            if count > 3:
+                raise Exception ('exit')
+            count += 1  
        
         #Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
