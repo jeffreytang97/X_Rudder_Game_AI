@@ -13,19 +13,19 @@ Author:
 """
 
 """
-PS: We should create a main function to run all the functions required instead of calling each function one by one.
+PS: Create a main function to run all the functions required instead of calling each function one by one.
 
 """
 
 import sys
 
 # Just an example
-def test_example():
-    print("Welcome to X-Rudder game!AHHHHH")
+def initiate_game():
+    print("Welcome to X-Rudder game! AHHHHH")
 
 def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
-    test_example()
+    initiate_game()
     Board = BoardClass()
     Board.create_board()
     Board.print_board()
@@ -367,7 +367,7 @@ class BoardClass:
             increment += 1
     
     def playerChoice(self):
-        choice = input("Press 1 to player against another player. Press any to play against the computer: \n")
+        choice = input("Press 1 for player vs player game mode. Press any other key to play against the computer: \n")
         
         if choice is "1":
             print("Playing against player, the first player will be X, the second player will be O \n")
@@ -391,9 +391,10 @@ class BoardClass:
                         print('Keyboard interrupt CTRL+C')
                         sys.exit(0)
                         
+            # Modify this part for future (it is just temporary right now)
             print("All 30 moves has been used. Exiting the game")       # Tie game
             raise Exception ('exit')
-1
+
         else:
             print("Playing against computer \n")
     
@@ -426,6 +427,6 @@ class BoardClass:
         # changed the board so that you no longer need to check for tiles with "1 |"
 
         self.board[coordinate] = token
-
-
+        
+    
 run_Game_Main_Function()
