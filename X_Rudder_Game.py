@@ -364,26 +364,117 @@ class BoardClass:
             increment += 1
     
     def playerChoice(self):
-        choice = input("Press 1 to player against another player. Press any to play against the computer: \n")
+        
+        choice = input("Press 1 to player against another player. Press any to play against the computer: \n")            
         
         if choice is "1":
             print("Playing against player, the first player will be X, the second player will be O \n")
-            moves = 0
-            while moves < 30:
-                #If "moves" is even X (Player 1). Else it's O
-                coordinate = input("Please input your coordinate: \n")
-                if moves % 2 == 0:
-                    token = "X"
-                    self.coordinate_selection(coordinate, token)
-                    moves += 1
+            moveToken = 0
+            placeToken = 0
+            #total = moveToken + placeToken
+            while(moveToken + placeToken < 60):
+                
+                placeOrMove = input ("Press 1 to place a token or Press 2 to displace a token.\n")
+                while placeOrMove != "1" and placeOrMove != "2":
+                    placeOrMove = input("Press 1 to place a token or Press 2 to displace a token.\n")
+                if placeOrMove is "1":
+                    if(placeToken < 30):
+                        if placeToken % 2 == 0:
+                            coordinate = input("Please input your coordinate (X's turn): \n")
+                            token = "X"
+                            self.coordinate_selection(coordinate, token)
+                            placeToken += 1
+                        else:
+                            coordinate = input("Please input your coordinate (O's turn): \n")
+                            token = "O"
+                            self.coordinate_selection(coordinate, token)
+                            placeToken += 1
+                    else:
+                        print("Sorry, you have reacherd the maximum amount of token.\n")
                 else:
-                    token = "O"
-                    self.coordinate_selection(coordinate, token)
-                    moves += 1
-            print("All 30 moves has been used. Exiting the game")
-            raise Exception ('exit')
+                    if(moveToken < 30):
+                        sourceCoor = input("Please input the coordinate of the token you wish to move. \n")
+                        destinationCoor = input("Please input the coordinate you wish to move to. \n")
+                        
+                        self.coordinate_move(sourceCoor, destinationCoor, "_", placeToken)
+                        moveToken += 1
+                        
+#                        if moveToken % 2 == 0:
+#                            token = "X"
+#                            self.coordinate_move(sourceCoor, destinationCoor, token)
+#                            placeToken += 1
+#                        else:
+#                            token = "O"
+#                            self.coordinate_move(sourceCoor, destinationCoor, token)
+#                            placeToken += 1
+                    else:
+                        print("Sorry, you have reached the maximum of moves permitted.\n")
+
         else:
-            print("Playing against computer \n")
+             print("Playing against computer \n")
+             
+             
+#        choice = input("Press 1 for player vs player game mode. Press any other key to play against the computer: \n")
+#        
+#        if choice is "1":
+#            print("Playing against player, the first player will be X, the second player will be O \n")
+#            moves = 0
+#            
+#            while moves < 30:
+#                try:
+#                    #If "moves" is even X (Player 1). Else it's O
+#                    if moves % 2 == 0:
+#                        coordinate = input("Please input your coordinate (X's turn): \n")
+#                        token = "X"
+#                        self.coordinate_selection(coordinate, token)
+#                        moves += 1
+#                    else:
+#                        coordinate = input("Please input your coordinate (O's turn): \n")
+#                        token = "O"
+#                        self.coordinate_selection(coordinate, token)
+#                        moves += 1
+#                        
+#                except KeyboardInterrupt:
+#                        print('Keyboard interrupt CTRL+C')
+#                        sys.exit(0)
+#                        
+#            # Modify this part for future (it is just temporary right now)
+#            print("All 30 moves has been used. Exiting the game")       # Tie game
+#            raise Exception ('exit')
+#
+#        else:
+#            print("Playing against computer \n")
+    
+    def coordinate_move(self, sourceCoor, destinationCoor, token, placeTokenTurn):
+        dict = self.board
+        flag = True
+        count = 0
+            
+        
+        while flag:
+            #Check if both coordinates are on the map
+            if sourceCoor in dict and destinationCoor in dict:
+                if dict.get(sourceCoor) == "X" and dict.get(destinationCoor) == "_" and placeTokenTurn % 2 == 0:
+                    flag = False
+                elif dict.get(sourceCoor) == "O" and dict.get(destinationCoor) == "_" and placeTokenTurn % 2 != 0:
+                    flag = False
+                else:
+                    flag = True
+            else:
+                flag = True
+                
+            if flag is True:
+                sourceCoor = input("Plese enter a valid source coordinate. \n")
+                destinationCoor = input("Please enter a valid destination coordinate. \n")
+                
+            if count > 3:
+                raise Exception ('exit')
+            count += 1
+        
+        self.addCoordinate(destinationCoor, dict.get(sourceCoor))
+        self.addCoordinate(sourceCoor, token)
+        self.print_board()
+            
     
     def coordinate_selection(self, coordinate, token):
         #Human VS Human, Human VS Algorithm
