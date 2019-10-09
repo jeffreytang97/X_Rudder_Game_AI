@@ -370,106 +370,92 @@ class BoardClass:
         if choice is "1":
             print("Playing against player, the first player will be X, the second player will be O \n")
             moveToken = 0
+            current_turn = 'X'
             placeToken = 0
-            #total = moveToken + placeToken
+            placeOrMove = '0'
+            
             while(moveToken + placeToken < 60):
                 
-                placeOrMove = input ("Press 1 to place a token or Press 2 to displace a token.\n")
+                placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to displace a token.\n")
+                    
                 while placeOrMove != "1" and placeOrMove != "2":
-                    placeOrMove = input("Press 1 to place a token or Press 2 to displace a token.\n")
+                    placeOrMove = input("please press a valid key. (1 for placing token, 2 for displacing a token)\n")
+
+                    
+                # This is to prevent taking option 2 when no token is available to be moved    
+                if placeToken < 2 and placeOrMove == "2":
+                        placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
+                        while placeOrMove != "1":
+                            placeOrMove = input("Please press 1 to place your token.\n")
+                            
+                    
+                # When player selected to add a token   
                 if placeOrMove is "1":
+
                     if(placeToken < 30):
-                        if placeToken % 2 == 0:
+                        if current_turn == 'X':
                             coordinate = input("Please input your coordinate (X's turn): \n")
                             token = "X"
                             self.coordinate_selection(coordinate, token)
                             placeToken += 1
+                            current_turn = 'O'
                         else:
                             coordinate = input("Please input your coordinate (O's turn): \n")
                             token = "O"
                             self.coordinate_selection(coordinate, token)
                             placeToken += 1
+                            current_turn = 'X'
                     else:
-                        print("Sorry, you have reacherd the maximum amount of token.\n")
-                else:
-                    if(moveToken < 30):
-                        sourceCoor = input("Please input the coordinate of the token you wish to move. \n")
-                        destinationCoor = input("Please input the coordinate you wish to move to. \n")
+                        print("Sorry, you have reached the maximum amount of token.\n")
                         
-                        self.coordinate_move(sourceCoor, destinationCoor, "_", placeToken)
+                # When player selected to move a token       
+                elif placeOrMove is "2":
+                    
+                    print('Number of moves used by both players combined: ', moveToken+1)
+                    
+                    if(moveToken < 30):
+                        self.coordinate_move("_", current_turn)
                         moveToken += 1
                         
-#                        if moveToken % 2 == 0:
-#                            token = "X"
-#                            self.coordinate_move(sourceCoor, destinationCoor, token)
-#                            placeToken += 1
-#                        else:
-#                            token = "O"
-#                            self.coordinate_move(sourceCoor, destinationCoor, token)
-#                            placeToken += 1
+                        if current_turn == 'X':
+                            current_turn = 'O'
+                        else:
+                            current_turn = 'X'
+                        
                     else:
-                        print("Sorry, you have reached the maximum of moves permitted.\n")
+                        print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
 
         else:
              print("Playing against computer \n")
              
-             
-#        choice = input("Press 1 for player vs player game mode. Press any other key to play against the computer: \n")
-#        
-#        if choice is "1":
-#            print("Playing against player, the first player will be X, the second player will be O \n")
-#            moves = 0
-#            
-#            while moves < 30:
-#                try:
-#                    #If "moves" is even X (Player 1). Else it's O
-#                    if moves % 2 == 0:
-#                        coordinate = input("Please input your coordinate (X's turn): \n")
-#                        token = "X"
-#                        self.coordinate_selection(coordinate, token)
-#                        moves += 1
-#                    else:
-#                        coordinate = input("Please input your coordinate (O's turn): \n")
-#                        token = "O"
-#                        self.coordinate_selection(coordinate, token)
-#                        moves += 1
-#                        
-#                except KeyboardInterrupt:
-#                        print('Keyboard interrupt CTRL+C')
-#                        sys.exit(0)
-#                        
-#            # Modify this part for future (it is just temporary right now)
-#            print("All 30 moves has been used. Exiting the game")       # Tie game
-#            raise Exception ('exit')
-#
-#        else:
-#            print("Playing against computer \n")
     
-    def coordinate_move(self, sourceCoor, destinationCoor, token, placeTokenTurn):
+    def coordinate_move(self, token, current_turn):
         dict = self.board
-        flag = True
-        count = 0
-            
+        flag_source = True
+        flag_dest = True
+       
+         # First, check if the right token is selected.
+        sourceCoor = input("Please enter the coordinate of the token you wish to move. \n")
+        while flag_source:
+            # Check if source coordinates exists on the board first
+            if sourceCoor in dict:
+                if dict.get(sourceCoor) == "X" and current_turn == 'X':
+                    flag_source = False
+                elif dict.get(sourceCoor) == "O" and current_turn == 'O':
+                    flag_source = False
+                
+            if flag_source is True:
+                sourceCoor = input("Please enter a valid coordinate that contains an " + current_turn + "'s token.\n")
+                
+        # Now, after the token has been selected, check if the destination coordinate is valid
+        destinationCoor = input("Please enter the coordinate you wish to move to. \n")
+        while flag_dest:
+            if destinationCoor in dict:
+                if dict.get(destinationCoor) == "_":
+                    flag_dest = False
         
-        while flag:
-            #Check if both coordinates are on the map
-            if sourceCoor in dict and destinationCoor in dict:
-                if dict.get(sourceCoor) == "X" and dict.get(destinationCoor) == "_" and placeTokenTurn % 2 == 0:
-                    flag = False
-                elif dict.get(sourceCoor) == "O" and dict.get(destinationCoor) == "_" and placeTokenTurn % 2 != 0:
-                    flag = False
-                else:
-                    flag = True
-            else:
-                flag = True
-                
-            if flag is True:
-                sourceCoor = input("Plese enter a valid source coordinate. \n")
-                destinationCoor = input("Please enter a valid destination coordinate. \n")
-                
-            if count > 3:
-                raise Exception ('exit')
-            count += 1
+            if flag_dest is True:
+                destinationCoor = input("Please enter a destination coordinate that is valid. \n")        
         
         self.addCoordinate(destinationCoor, dict.get(sourceCoor))
         self.addCoordinate(sourceCoor, token)
@@ -486,23 +472,15 @@ class BoardClass:
         while flag:
             
             #If coordinate key exist in Dictionary
-            if coordinate in dict:
-#                #Check if the coordinate has already a value (X or O)
+            if coordinate in dict:               #Check if the coordinate has already a value (X or O)
                 if dict.get(coordinate) is "_":
                     flag = False
                 else:
                     flag = True
-            else:
-                flag = True
 
             if flag is True:
                 coordinate = input("Please enter a valid coordinate: \n")    
-                
-            if count > 3:
-                raise Exception ('exit')
-            count += 1
             
-       
         #Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
         self.print_board()
