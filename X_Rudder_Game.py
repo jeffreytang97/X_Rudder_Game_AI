@@ -368,7 +368,7 @@ class BoardClass:
         choice = input("Press 1 to player against another player. Press any to play against the computer: \n")            
         
         if choice is "1":
-            print("Playing against player, the first player will be X, the second player will be O \n")
+            print("Player against player game mode. The first player will be X and the second player will be O \n")
             moveToken = 0
             current_turn = 'X'
             placeToken = 0
@@ -376,10 +376,10 @@ class BoardClass:
             
             while(moveToken + placeToken < 60):
                 
-                placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to displace a token.\n")
+                placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
                     
                 while placeOrMove != "1" and placeOrMove != "2":
-                    placeOrMove = input("please press a valid key. (1 for placing token, 2 for displacing a token)\n")
+                    placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
 
                     
                 # This is to prevent taking option 2 when no token is available to be moved    
@@ -391,7 +391,6 @@ class BoardClass:
                     
                 # When player selected to add a token   
                 if placeOrMove is "1":
-
                     if(placeToken < 30):
                         if current_turn == 'X':
                             coordinate = input("Please input your coordinate (X's turn): \n")
@@ -417,6 +416,7 @@ class BoardClass:
                         self.coordinate_move("_", current_turn)
                         moveToken += 1
                         
+                        # Every player plays once per turn (move or place token)
                         if current_turn == 'X':
                             current_turn = 'O'
                         else:
@@ -463,20 +463,18 @@ class BoardClass:
             
     
     def coordinate_selection(self, coordinate, token):
-        #Human VS Human, Human VS Algorithm
+        # Human VS Human, Human VS Algorithm
         dict = self.board
         flag = True
-        count = 0
         
-        #while Flag is false, ask user to enter valid coordinates
+        # while Flag is false, ask user to enter valid coordinates
         while flag:
             
-            #If coordinate key exist in Dictionary
-            if coordinate in dict:               #Check if the coordinate has already a value (X or O)
+            # If coordinate key exist in Dictionary
+            # Check if the coordinate has already a value (X or O)
+            if coordinate in dict:              
                 if dict.get(coordinate) is "_":
                     flag = False
-                else:
-                    flag = True
 
             if flag is True:
                 coordinate = input("Please enter a valid coordinate: \n")    
@@ -486,8 +484,8 @@ class BoardClass:
         self.print_board()
     
     def addCoordinate(self, coordinate, token):
-        #Get user input stream and add coodrinates onto board
-        #Has to alternated between X and O
+        # Get user input stream and add coodrinates onto board
+        # Has to alternated between X and O
         # changed the board so that you no longer need to check for tiles with "1 |"
 
         self.board[coordinate] = token
