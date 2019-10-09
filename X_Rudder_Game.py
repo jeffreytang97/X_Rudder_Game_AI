@@ -367,35 +367,6 @@ class BoardClass:
             increment += 1
     
     def playerChoice(self):
-<<<<<<< HEAD
-        choice = input("Press 1 for player vs player game mode. Press any other key to play against the computer: \n")
-        
-        if choice is "1":
-            print("Playing against player, the first player will be X, the second player will be O \n")
-            moves = 0
-            
-            while moves < 30:
-                try:
-                    #If "moves" is even X (Player 1). Else it's O
-                    if moves % 2 == 0:
-                        coordinate = input("Please input your coordinate (X's turn): \n")
-                        token = "X"
-                        self.coordinate_selection(coordinate, token)
-                        moves += 1
-                    else:
-                        coordinate = input("Please input your coordinate (O's turn): \n")
-                        token = "O"
-                        self.coordinate_selection(coordinate, token)
-                        moves += 1
-                        
-                except KeyboardInterrupt:
-                        print('Keyboard interrupt CTRL+C')
-                        sys.exit(0)
-                        
-            # Modify this part for future (it is just temporary right now)
-            print("All 30 moves has been used. Exiting the game")       # Tie game
-            raise Exception ('exit')
-=======
         
         choice = input("Press 1 to player against another player. Press any to play against the computer: \n")            
         
@@ -456,7 +427,6 @@ class BoardClass:
                         
                     else:
                         print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
->>>>>>> entry_Manual_Auto_WHY
 
         else:
              print("Playing against computer \n")
@@ -496,27 +466,7 @@ class BoardClass:
             
     
     def coordinate_selection(self, coordinate, token):
-<<<<<<< HEAD
-        #Human VS Human, Human VS Algorithm
-        dict = self.board          
-        flag = True
-        
-        # while Flag is true, ask user to enter valid coordinates
-        # when flag becomes false, add X or O on the board and continue with next player's turn
-        while flag:
-            #If coordinate key exist in Dictionary
-            if coordinate in dict:
-                #Check if the coordinate has already a value (X or O)
-                if dict.get(coordinate) is "_":
-                    flag = False
-                else:
-                    flag = True
-     
-            if flag is True:
-                coordinate = input("Please enter a valid coordinate: \n")  
-       
-        # Calling member function within a class, gotta use self
-=======
+
         # Human VS Human, Human VS Algorithm
         dict = self.board
         flag = True
@@ -533,8 +483,7 @@ class BoardClass:
             if flag is True:
                 coordinate = input("Please enter a valid coordinate: \n")    
             
-        #Calling member function within a class, gotta use self
->>>>>>> entry_Manual_Auto_WHY
+        # Calling member function within a class, gotta use self
         self.addCoordinate(coordinate, token)
         self.print_board()
         
