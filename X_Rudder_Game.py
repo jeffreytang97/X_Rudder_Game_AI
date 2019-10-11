@@ -190,15 +190,6 @@ class BoardClass:
         #     "K1": "K1",
         #     "L1": "L1",
         # }
-        #
-        # increment = 1
-        # for y in self.dictionary_poc:
-        #     print(self.dictionary_poc[y], end='|')
-        #     if increment % 12 == 0:
-        #         print('')
-        #     increment += 1
-        #
-        # print("")
     
         # final board
         # adding the row labels on each row will make tile checking more complex - we should discuss
@@ -378,8 +369,7 @@ class BoardClass:
             current_turn = 'X'
             placeToken = 0
             placeOrMove = '0'
-            
-<<<<<<< HEAD
+
             while(moveToken + placeToken < 60):
                 
                 placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
@@ -401,13 +391,13 @@ class BoardClass:
                         if current_turn == 'X':
                             coordinate = input("Please input your coordinate (X's turn): \n")
                             token = "X"
-                            self.coordinate_selection(coordinate, token)
+                            stop_game = self.coordinate_selection(coordinate, token)
                             placeToken += 1
                             current_turn = 'O'
                         else:
                             coordinate = input("Please input your coordinate (O's turn): \n")
                             token = "O"
-                            self.coordinate_selection(coordinate, token)
+                            stop_game = self.coordinate_selection(coordinate, token)
                             placeToken += 1
                             current_turn = 'X'
                     else:
@@ -419,7 +409,7 @@ class BoardClass:
                     print('Number of moves used by both players combined: ', moveToken+1)
                     
                     if(moveToken < 30):
-                        self.coordinate_move("_", current_turn)
+                        stop_game = self.coordinate_move(current_turn)
                         moveToken += 1
                         
                         # Every player plays once per turn (move or place token)
@@ -430,39 +420,17 @@ class BoardClass:
                         
                     else:
                         print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
-=======
-            while moves < 30:
-                try:
-                    #If "moves" is even X (Player 1). Else it's O
-                    if moves % 2 == 0:
-                        coordinate = input("Please input your coordinate (X's turn): \n")
-                        token = "X"
-                        stop_game = self.coordinate_selection(coordinate, token)
-                        moves += 1
-                    else:
-                        coordinate = input("Please input your coordinate (O's turn): \n")
-                        token = "O"
-                        stop_game = self.coordinate_selection(coordinate, token)
-                        moves += 1
-                        
-                except KeyboardInterrupt:
-                        print('Keyboard interrupt CTRL+C')
-                        sys.exit(0)
-            
+                 
+                # Check if game has endeds    
                 if stop_game == True:
                     print('There is a winner in this game!!!')
                     break
-            
-            # Modify this part for future (it is just temporary right now)
-            #print("All 30 moves has been used. Exiting the game")       # Tie game
-            #raise Exception ('exit')
->>>>>>> Rules_branch_jtang
-
+                
         else:
              print("Playing against computer \n")
              
     
-    def coordinate_move(self, token, current_turn):
+    def coordinate_move(self, current_turn):
         dict = self.board
         flag_source = True
         flag_dest = True
@@ -490,9 +458,12 @@ class BoardClass:
             if flag_dest is True:
                 destinationCoor = input("Please enter a destination coordinate that is valid. \n")        
         
-        self.addCoordinate(destinationCoor, dict.get(sourceCoor))
-        self.addCoordinate(sourceCoor, token)
+        token_to_move = dict.get(sourceCoor)
+        stop_game = self.addCoordinate(sourceCoor, "_")
+        stop_game = self.addCoordinate(destinationCoor, token_to_move)
         self.print_board()
+        
+        return stop_game
             
     
     def coordinate_selection(self, coordinate, token):
@@ -537,34 +508,60 @@ class BoardClass:
         
         # column = letters
         # row = numbers
-        column, row = coordinate
+        if len(coordinate) <= 2:
+            column, row = coordinate
+        else:
+            column, row_element1, row_element2 = coordinate
+            row = row_element1 + row_element2
+        
+        '''Case 1: Winning conditions for 3 tiles top left + bottom left corners of the board'''
         
         if column == 'A' or column == 'B':
-            if row == '1' or row == '2':
-                
+            # To get column C if we added a token in column A for example
+            on_the_right_column = chr(ord(column) + 2)
+            # To get the middle column of the formed X
+            X_center_column = chr(ord(column) + 1)
+            
+            if row == '1' or (row == '2' and column == 'A'):
                 # to get the coordinates of two rows and two columns up and right respectively
                 new_row = int(row) + 2
-                new_column = chr(ord(column) + 2)
+                # To get the center tile of the possible X formed.
+                X_middle_row = int(row) + 1
                 
                 # get the coordinates of all the 4 corners of the tiles where an X can be formed.
-                X_coord_1 = column + row
-                X_coord_2 = column + str(new_row)
-                X_coord_3 = new_column + row
-                X_coord_4 = new_column + str(new_row)
+                X_bottom_left_coord = column + row
+                X_upper_left_coord = column + str(new_row)
+                X_bottom_right_coord = on_the_right_column + row
+                X_upper_right_coord = on_the_right_column + str(new_row)
+                X_center_coord = X_center_column + str(X_middle_row)
                 
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord)
+                
+            elif (row == '9' and column == 'A') or row == '10':
+                # to get the coordinates of two rows and two columns up and right respectively
+                new_row = int(row) - 2
                 # To get the center tile of the possible X formed.
-                new_row = int(row) + 1
-                new_column = chr(ord(column) + 1)
+                X_middle_row = int(row) - 1
                 
-                # get the middle tile of the possible X that could be formed.
-                X_coord_center = new_column + str(new_row)
+                # get the coordinates of all the 4 corners of the tiles where an X can be formed.
+                X_bottom_left_coord = column + str(new_row)
+                X_upper_left_coord = column + row
+                X_bottom_right_coord = on_the_right_column + str(new_row)
+                X_upper_right_coord = on_the_right_column + row
+                X_center_coord = X_center_column + str(X_middle_row)
                 
-                # Now that we have all the coordinates, check with the board to see if a X has been formed with the tokens.
-                if self.board[X_coord_1] == token and self.board[X_coord_2] == token and self.board[X_coord_3] == token and self.board[X_coord_4] == token and self.board[X_coord_center] == token:
-                    # Means that an X has been formed
-                    # Need to also add the illegal winning condition check...
-                    stop_game = True
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord)
         return stop_game
+    
+    def check_X_condition(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
+        condition = False
+        # Now that we have all the coordinates, check with the board to see if a X has been formed with the tokens.
+        if (self.board[X_bottom_left_coord] and self.board[X_upper_left_coord] and self.board[X_bottom_right_coord] 
+            and self.board[X_upper_right_coord] and self.board[X_center_coord]) == token:
+            # Means that an X has been formed
+            # Need to also add the illegal winning condition check...
+            condition = True
+        return condition
         
 run_Game_Main_Function()
 
