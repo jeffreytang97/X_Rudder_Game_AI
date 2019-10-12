@@ -467,26 +467,25 @@ class BoardClass:
                 destinationCoor = input("Please enter a destination coordinate that is valid. \n")        
         
         token_to_move = dict.get(sourceCoor)
+        # Change the current tile to "_" since we are going to move the token.
         stop_game = self.addCoordinate(sourceCoor, "_")                 # This stop_game boolean will be overwritten by the one below
         
+        #-----------------------------------------------------------------------------------------------#
         # for this case, we want to check if a token movement will influence in his loss or not
         # If for example, O has been moved and that it was acting as a counter for an X formed by the other player, he will therefore lose.
         column, row = self.seperate_coordinate_values(sourceCoor)
-        
         if token_to_move is 'X':
             opposite_token = 'O'
         elif token_to_move is 'O':
             opposite_token = 'X'
-            
         # get the tile below the location of the token to be moved
         new_row = int(row)-1
         target_coord = column + str(new_row)
-        print(target_coord)
-        print(opposite_token)
         flag = False
         losing_on_move = self.check_winning_condition(target_coord, opposite_token, flag)
-        print(losing_on_move)
+        #-----------------------------------------------------------------------------------------------#
         
+        # Now, add the token to the destination coordinate
         stop_game = self.addCoordinate(destinationCoor, token_to_move)
         self.print_board()
         
@@ -583,50 +582,69 @@ class BoardClass:
         
         column, row = self.seperate_coordinate_values(coordinate)
         
-        #--------------------------- Case 1: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
+        # To get column C if we added a token in column A for example
+        two_on_the_right_column = chr(ord(column) + 2)
+        # To get move 2 column to the left
+        two_on_the_left_column = chr(ord(column) - 2)
+        # To get middle column of the formed X on left
+        X_center_column_left = chr(ord(column) - 1)
+        # To get the middle column of the formed X on right
+        X_center_column_right = chr(ord(column) + 1)
+        # to get the coordinates of two rows above
+        two_row_up = int(row) + 2
+        # to get the coordinates of two rows below
+        two_row_down = int(row) - 2
+        # To get the center tile of the possible X formed above
+        X_middle_row_up = int(row) + 1
+        # to get the center tile of the possible X formed below
+        X_middle_row_down = int(row) - 1
         
+        #----------------------- Case 1: Winning conditions for 3 tiles for each LEFT corners on the board (A1,A2,B2,A9,A10,B10) -------------------- #
         if column == 'A' or column == 'B':
-            # To get column C if we added a token in column A for example
-            on_the_right_column = chr(ord(column) + 2)
-            # To get the middle column of the formed X
-            X_center_column = chr(ord(column) + 1)
-            
+            # 3 tiles bottom left corner
             if row == '1' or (row == '2' and column == 'A'):
-                # to get the coordinates of two rows and two columns up and right respectively
-                new_row = int(row) + 2
-                # To get the center tile of the possible X formed.
-                X_middle_row = int(row) + 1
-                
                 # get the coordinates of all the 4 corners of the tiles where an X can be formed.
                 X_bottom_left_coord = column + row
-                X_upper_left_coord = column + str(new_row)
-                X_bottom_right_coord = on_the_right_column + row
-                X_upper_right_coord = on_the_right_column + str(new_row)
-                X_center_coord = X_center_column + str(X_middle_row)
-                
+                X_upper_left_coord = column + str(two_row_up)
+                X_bottom_right_coord = two_on_the_right_column + row
+                X_upper_right_coord = two_on_the_right_column + str(two_row_up)
+                X_center_coord = X_center_column_right + str(X_middle_row_up)
                 stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
                 
+            # 3 tiles upper left corner
             elif (row == '9' and column == 'A') or row == '10':
-                # to get the coordinates of two rows and two columns up and right respectively
-                new_row = int(row) - 2
-                # To get the center tile of the possible X formed.
-                X_middle_row = int(row) - 1
-                
-                # get the coordinates of all the 4 corners of the tiles where an X can be formed.
-                X_bottom_left_coord = column + str(new_row)
+                X_bottom_left_coord = column + str(two_row_down)
                 X_upper_left_coord = column + row
-                X_bottom_right_coord = on_the_right_column + str(new_row)
-                X_upper_right_coord = on_the_right_column + row
-                X_center_coord = X_center_column + str(X_middle_row)
-                
+                X_bottom_right_coord = two_on_the_right_column + str(two_row_down)
+                X_upper_right_coord = two_on_the_right_column + row 
+                X_center_coord = X_center_column_right + str(X_middle_row_down)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
+            
+        #--------------------- Case 2: Winning conditions for 3 tiles for each RIGHT corners on the board (L1,L2,K2,L9,L10,K10) ----------------- #
+        if column == 'K' or column == 'L':
+            # 3 tiles bottom right corner
+            if row == '1' or (row == '2' and column == 'L'):
+                X_bottom_left_coord = two_on_the_left_column + row
+                X_upper_left_coord = two_on_the_left_column + str(two_row_up)
+                X_bottom_right_coord = column + row
+                X_upper_right_coord = column + str(two_row_up)
+                X_center_coord = X_center_column_left + str(X_middle_row_up)
                 stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
                 
-        #--------------------------- Case 2: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
-        #--------------------------- Case 3: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
-        #--------------------------- Case 4: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
-        #--------------------------- Case 5: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
-        #--------------------------- Case 6: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
-        #--------------------------- Case 7: Winning conditions for 3 tiles top left + bottom left corners of the board -------------------------------- #
+            # 3 tiles upper right corner
+            elif (row == '9' and column == 'L') or row == '10':
+                # get the coordinates of all the 4 corners of the tiles where an X can be formed.
+                X_bottom_left_coord = two_on_the_left_column + str(two_row_down)
+                X_upper_left_coord = two_on_the_left_column + row
+                X_bottom_right_coord = column + str(two_row_down)
+                X_upper_right_coord = column + row
+                X_center_coord = X_center_column_left + str(X_middle_row_down)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
+                
+                
+        #--------------------------- Case 2: -------------------------------- #
+        
+        
                 
         return stop_game
     
