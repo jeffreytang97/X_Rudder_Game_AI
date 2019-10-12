@@ -376,15 +376,13 @@ class BoardClass:
             while(moveToken + placeToken < 60):
                 
                 placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
-                
+
+                while placeOrMove != "1" and placeOrMove != "2":
+                    placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
+
                 confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
-                
-                if(confirmChoice == "1"):
-                                   
-                    while placeOrMove != "1" and placeOrMove != "2":
-                        placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
-    
-                        
+
+                if(confirmChoice == "1"):                                 
                     # This is to prevent taking option 2 when no token is available to be moved    
                     if placeToken < 2 and placeOrMove == "2":
                             placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
@@ -421,8 +419,8 @@ class BoardClass:
                         else:
                             print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
                             limit_reached = True
-                     
-                    # Check if game has endeds    
+                        
+                                            # Check if game has endeds    
                     if stop_game == True:
                         print('There is a winner in this game!!!')
                         break
@@ -437,8 +435,10 @@ class BoardClass:
                             current_turn = 'O'
                         else:
                             current_turn = 'X'
+                        
                 else:
-                    print("Going back. \n")
+                    print("Going Back. \n")
+
         else:
              print("Playing against computer \n")
              
@@ -486,8 +486,8 @@ class BoardClass:
         # get the tile below the location of the token to be moved
         new_row = int(row)-1
         target_coord = column + str(new_row)
-        place_token_flag = False                                                                           # Flag = false when move, true when add token
-        losing_on_move = self.check_winning_condition(target_coord, opposite_token, place_token_flag)
+        flag = False
+        losing_on_move = self.check_winning_condition(target_coord, opposite_token, flag)
         #-----------------------------------------------------------------------------------------------#
         
         # Now, add the token to the destination coordinate
@@ -497,7 +497,7 @@ class BoardClass:
         return stop_game, losing_on_move
     
     
-    def coordinate_selection(self, coordinate, token): 
+    def coordinate_selection(self, coordinate, token):
 
         # Human VS Human, Human VS Algorithm
         dict = self.board
@@ -527,9 +527,9 @@ class BoardClass:
         # changed the board so that you no longer need to check for tiles with "1 |"
 
         self.board[coordinate] = token
-        place_token_flag = True
+        flag = True
         # Everythime a token is added on the board, need to check if a player won.
-        stop_game = self.check_winning_condition(coordinate, token, place_token_flag)
+        stop_game = self.check_winning_condition(coordinate, token, flag)
         return stop_game
     
     def seperate_coordinate_values(self, coordinate):
@@ -544,151 +544,113 @@ class BoardClass:
         return column, row
     
     
-    def check_X_condition(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, place_token_flag):
+    def check_X_condition(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag):
         
         condition = False
-        print(token)
         
         if token == "_":
             pass
         
         # Now that we have all the coordinates, check with the board to see if a X has been formed with the tokens.
-        elif self.board[X_bottom_left_coord] == token and self.board[X_upper_left_coord] == token and self.board[X_bottom_right_coord] == token and self.board[X_upper_right_coord] == token and self.board[X_center_coord] == token:
+        elif (self.board[X_bottom_left_coord] and self.board[X_upper_left_coord] and self.board[X_bottom_right_coord] and self.board[X_upper_right_coord] 
+            and self.board[X_center_coord]) == token:
             
-            if place_token_flag == True:
-                if token is 'X':
-                    opposite_token = 'O'
-                elif token is 'O':
-                    opposite_token = 'X'
-    
-                # get the middle coordinates of the possible X formed and check to see if the opposite player has countered the winning condition
-                left_column, row = self.seperate_coordinate_values(X_bottom_left_coord)
-                right_column, row = self.seperate_coordinate_values(X_bottom_right_coord)
-                middle_row = int(row) + 1
-                left_coord = left_column + str(middle_row)
-                right_coord = right_column + str(middle_row)
-                
-                # Check if it is a legal winning condition
-                if (self.board[left_coord] and self.board[right_coord]) == opposite_token:
-                    # means that the player trying to form the X did not win yet because he got countered by the opposite player
-                    condition = False
-                else:
-                    condition = True
+            if token is 'X':
+                opposite_token = 'O'
+            elif token is 'O':
+                opposite_token = 'X'
+
+            # get the middle coordinates of the possible X formed and check to see if the opposite player has countered the winning condition
+            left_column, row = self.seperate_coordinate_values(X_bottom_left_coord)
+            right_column, row = self.seperate_coordinate_values(X_bottom_right_coord)
+            middle_row = int(row) + 1
+            left_coord = left_column + str(middle_row)
+            right_coord = right_column + str(middle_row)
+            
+            # Check if it is a legal winning condition
+            if (self.board[left_coord] and self.board[right_coord]) == opposite_token and flag == True:
+                # means that the player trying to form the X did not win yet because he got countered by the opposite player
+                condition = False
             else:
                 condition = True
                 
         return condition
         
-    def check_surroundings_coordinates(self,X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag):
-         # get the coordinates of all the 4 corners of the tiles where an X can be formed.
-         x1 = X_bottom_left_coord
-         x2 = X_upper_left_coord 
-         x3 = X_bottom_right_coord
-         x4 = X_upper_right_coord 
-         x_mid = X_center_coord 
-         stop_game = self.check_X_condition(token, x1, x2, x3, x4, x_mid, place_token_flag)
-         return stop_game
 
     # if flag is true, then we want to evaluate the X counter, if false, don't evaluate the X counter
-    def check_winning_condition(self, coordinate, token, place_token_flag):
+    def check_winning_condition(self, coordinate, token, flag):
         
         """For this function, we check the surroundings of the location of the token added. If an X is formed, there is a winner depending 
             on whether it is a legal winning condition or not"""
         
         stop_game = False
         
-        if token == "_":
-            pass
-        else:
-            column, row = self.seperate_coordinate_values(coordinate)
-            
-            # To get column C if we added a token in column A for example
-            two_on_the_right_column = chr(ord(column) + 2)
-            # To get move 2 column to the left
-            two_on_the_left_column = chr(ord(column) - 2)
-            # To get middle column of the formed X on left
-            X_one_column_left = chr(ord(column) - 1)
-            # To get the middle column of the formed X on right
-            X_one_column_right = chr(ord(column) + 1)
-            # to get the coordinates of two rows above
-            two_row_up = int(row) + 2
-            # to get the coordinates of two rows below
-            two_row_down = int(row) - 2
-            # To get the center tile of the possible X formed above
-            X_one_row_up = int(row) + 1
-            # to get the center tile of the possible X formed below
-            X_one_row_down = int(row) - 1
-            
-            if column == 'A' or column == 'B':
+        column, row = self.seperate_coordinate_values(coordinate)
+        
+        # To get column C if we added a token in column A for example
+        two_on_the_right_column = chr(ord(column) + 2)
+        # To get move 2 column to the left
+        two_on_the_left_column = chr(ord(column) - 2)
+        # To get middle column of the formed X on left
+        X_center_column_left = chr(ord(column) - 1)
+        # To get the middle column of the formed X on right
+        X_center_column_right = chr(ord(column) + 1)
+        # to get the coordinates of two rows above
+        two_row_up = int(row) + 2
+        # to get the coordinates of two rows below
+        two_row_down = int(row) - 2
+        # To get the center tile of the possible X formed above
+        X_middle_row_up = int(row) + 1
+        # to get the center tile of the possible X formed below
+        X_middle_row_down = int(row) - 1
+        
+        #----------------------- Case 1: Winning conditions for 3 tiles for each LEFT corners on the board (A1,A2,B2,A9,A10,B10) -------------------- #
+        if column == 'A' or column == 'B':
+            # 3 tiles bottom left corner
+            if row == '1' or (row == '2' and column == 'A'):
+                # get the coordinates of all the 4 corners of the tiles where an X can be formed.
+                X_bottom_left_coord = column + row
+                X_upper_left_coord = column + str(two_row_up)
+                X_bottom_right_coord = two_on_the_right_column + row
+                X_upper_right_coord = two_on_the_right_column + str(two_row_up)
+                X_center_coord = X_center_column_right + str(X_middle_row_up)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
                 
-                # ---------------------- Case 1: Winning conditions for the 3 tiles bottom left corner (A1,A2,B2) ---------------------- #
-                if row == '1' or (row == '2' and column == 'A'):
-                    # get the coordinates of all the 4 corners of the tiles where an X can be formed.
-                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
-                    stop_game = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
-                    print('case 1')
-                # ---------------------- Case 2: Winning conditions for the 3 tiles upper left corner (A9,A10,B10) --------------------- #
-                elif (row == '9' and column == 'A') or row == '10':            
-                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
-                    stop_game = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row, X_one_column_right + str(X_one_row_down), token, place_token_flag)
-                    print('case 2')
-                # ----------------------------- Case 3: Winning conditions for the tiles (B2 or B9) ---------------------------- #
-                elif column == 'B' and (row == '2' or row == '9'):
-                    print('case 3')
-                    pass
-                
-                else:
-                    print('case 4 or 5')
-                    for i in range(3, 8):
-                        if row == str(i):
-                            # ----------------------------- Case 4: Winning conditions for the tiles (A3-A8) ---------------------------- #
-                            if column == 'A':
-                                # Check below
-                                stop_game_1 = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row , X_one_column_right + str(X_one_row_down), token, place_token_flag)
-                                # Check above
-                                stop_game_2 = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
-                                # Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner.
-                                print(stop_game_1, stop_game_2)
-                                print(i)
-                                if stop_game_1 == True or stop_game_2 == True:
-                                    stop_game = True
-                                    break
-                                
-                            # ----------------------------- Case 5: Winning conditions for the tiles (B3-B8) ---------------------------- #
-                            elif column == 'B':
-                                # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
-                                # Check below
-                                stop_game_1 = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row , X_one_column_right + str(X_one_row_down), token, place_token_flag)
-                                # Check above
-                                stop_game_2 = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
-                                # Check middle
-                                stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
-                                # Check if at least one of the 3 possible patterns above is true or not. If so, then we have a winner.
-                                if stop_game_1 == True or stop_game_2 == True or stop_game_mid == True:
-                                    stop_game = True
-                                    break
-                                
-                                """
-                                X_one_row_up
-                                X_one_row_down
-                                X_one_column_left
-                                X_one_column_right
-                                """
-                
-            #--------------------- Case 2: Winning conditions for 3 tiles for each RIGHT corners on the board (L1,L2,K2,L9,L10,K10) ----------------- #
-            if column == 'K' or column == 'L':
-                # 3 tiles bottom right corner
-                if row == '1' or (row == '2' and column == 'L'):
-                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
-                    stop_game =  self.check_surroundings_coordinates(two_on_the_left_column + row, two_on_the_left_column + str(two_row_up), column + row, column + str(two_row_up), X_one_column_left + str(X_one_row_up), token, place_token_flag)
-                    
-                # 3 tiles upper right corner
-                elif (row == '9' and column == 'L') or row == '10':                    
-                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
-                    stop_game = self.check_surroundings_coordinates(two_on_the_left_column + str(two_row_down), two_on_the_left_column + row, column + str(two_row_down), column + row, X_one_column_left + str(X_one_row_down), token, place_token_flag)
-           
+            # 3 tiles upper left corner
+            elif (row == '9' and column == 'A') or row == '10':
+                X_bottom_left_coord = column + str(two_row_down)
+                X_upper_left_coord = column + row
+                X_bottom_right_coord = two_on_the_right_column + str(two_row_down)
+                X_upper_right_coord = two_on_the_right_column + row 
+                X_center_coord = X_center_column_right + str(X_middle_row_down)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
             
-       
+        #--------------------- Case 2: Winning conditions for 3 tiles for each RIGHT corners on the board (L1,L2,K2,L9,L10,K10) ----------------- #
+        if column == 'K' or column == 'L':
+            # 3 tiles bottom right corner
+            if row == '1' or (row == '2' and column == 'L'):
+                X_bottom_left_coord = two_on_the_left_column + row
+                X_upper_left_coord = two_on_the_left_column + str(two_row_up)
+                X_bottom_right_coord = column + row
+                X_upper_right_coord = column + str(two_row_up)
+                X_center_coord = X_center_column_left + str(X_middle_row_up)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
+                
+            # 3 tiles upper right corner
+            elif (row == '9' and column == 'L') or row == '10':
+                # get the coordinates of all the 4 corners of the tiles where an X can be formed.
+                X_bottom_left_coord = two_on_the_left_column + str(two_row_down)
+                X_upper_left_coord = two_on_the_left_column + row
+                X_bottom_right_coord = column + str(two_row_down)
+                X_upper_right_coord = column + row
+                X_center_coord = X_center_column_left + str(X_middle_row_down)
+                stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
+                
+                
+        #--------------------------- Case 2: -------------------------------- #
+        
+        
+                
         return stop_game
     
 run_Game_Main_Function()
