@@ -377,14 +377,13 @@ class BoardClass:
                 
                 placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
                 
+                # For invalid keys
+                while placeOrMove != "1" and placeOrMove != "2":
+                        placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
+                
                 confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
                 
                 if(confirmChoice == "1"):
-                                   
-                    while placeOrMove != "1" and placeOrMove != "2":
-                        placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
-    
-                        
                     # This is to prevent taking option 2 when no token is available to be moved    
                     if placeToken < 2 and placeOrMove == "2":
                             placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
