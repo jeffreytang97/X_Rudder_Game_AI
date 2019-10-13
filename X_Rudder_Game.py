@@ -661,7 +661,8 @@ class BoardClass:
                             stop_game = True
                 else:
                     print('case 4 or 5')
-                    for i in range(3, 8):
+                    # loop from 3 to 8
+                    for i in range(3, 9):
                         if row == str(i):
                             # ----------------------------- Case 4: Winning conditions for the tiles (A3-A8) ---------------------------- #
                             if column == 'A':
@@ -722,7 +723,9 @@ class BoardClass:
                         if stop_game_1 == True or stop_game_mid == True:
                             stop_game = True
                 else:
-                    for i in range(3, 8):
+                    print('case 8 or 9')
+                    # loop from 3 to 8
+                    for i in range(3, 9):
                         if row == str(i):
                             # ----------------------------- Case 9: Winning conditions for the tiles (L3-L8) ---------------------------- #
                             if column == 'L':
@@ -745,6 +748,8 @@ class BoardClass:
                                 # Check middle
                                 stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
                                 # Check if at least one of the 3 possible patterns above is true or not. If so, then we have a winner.
+                                print(stop_game_1, stop_game_2, stop_game_mid)
+                                
                                 if stop_game_1 == True or stop_game_2 == True or stop_game_mid == True:
                                     stop_game = True
                                     break
