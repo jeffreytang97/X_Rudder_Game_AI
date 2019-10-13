@@ -376,6 +376,7 @@ class BoardClass:
             while(moveToken + placeToken < 60):
                 
                 placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
+<<<<<<< HEAD
 
                 while placeOrMove != "1" and placeOrMove != "2":
                     placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
@@ -383,6 +384,16 @@ class BoardClass:
                 confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
 
                 if(confirmChoice == "1"):                                 
+=======
+                
+                # For invalid keys
+                while placeOrMove != "1" and placeOrMove != "2":
+                        placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
+                
+                confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
+                
+                if(confirmChoice == "1"):
+>>>>>>> new_Rules_Jeffrey_Branch
                     # This is to prevent taking option 2 when no token is available to be moved    
                     if placeToken < 2 and placeOrMove == "2":
                             placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
@@ -422,10 +433,16 @@ class BoardClass:
                         
                                             # Check if game has endeds    
                     if stop_game == True:
-                        print('There is a winner in this game!!!')
+                        print('Game Over! Player ' + current_turn + ' has won the game!!!')
                         break
                     elif losing_on_move == True:
-                        print('The token you moved made you lose the game... There is a winner in this game')
+                        if current_turn == 'X':
+                            opposite_token = 'O'
+                        else:
+                            opposite_token = 'X'
+                        
+                        print('The token you moved made you lose the game... Therefore, ' + opposite_token + ' has won the game!!!')
+                        break
                   
                     # If limit of token or movement reached but game can still go on...
                     # Don't count as turn for a player if didn't use it yet
@@ -636,6 +653,7 @@ class BoardClass:
                 X_center_coord = X_center_column_left + str(X_middle_row_up)
                 stop_game = self.check_X_condition(token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, flag)
                 
+<<<<<<< HEAD
             # 3 tiles upper right corner
             elif (row == '9' and column == 'L') or row == '10':
                 # get the coordinates of all the 4 corners of the tiles where an X can be formed.
@@ -651,6 +669,135 @@ class BoardClass:
         
         
                 
+=======
+                # ---------------------- Case 1: Winning conditions for the 3 tiles bottom left corner (A1,A2,B2) ---------------------- #
+                if row == '1' or (row == '2' and column == 'A'):
+                    # get the coordinates of all the 4 corners of the tiles where an X can be formed.
+                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                    stop_game = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
+                    print('case 1')
+                    
+                # ---------------------- Case 2: Winning conditions for the 3 tiles upper left corner (A9,A10,B10) --------------------- #
+                elif (row == '9' and column == 'A') or row == '10':            
+                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                    stop_game = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row, X_one_column_right + str(X_one_row_down), token, place_token_flag)
+                    print('case 2')
+                    
+                # ----------------------------- Case 3: Winning conditions for the tiles (B2 or B9) ---------------------------- #
+                elif column == 'B' and (row == '2' or row == '9'):
+                    print('case 3')
+                    if row == '2':
+                        # Check above right
+                        stop_game_1 = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
+                        # Check middle
+                        stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                        #  Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner 
+                        if stop_game_1 == True or stop_game_mid == True:
+                            stop_game = True
+                    elif row == '9':
+                        # Check below right
+                        stop_game_1 = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row , X_one_column_right + str(X_one_row_down), token, place_token_flag)
+                        # Check middle
+                        stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                        #  Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner 
+                        if stop_game_1 == True or stop_game_mid == True:
+                            stop_game = True
+                else:
+                    print('case 4 or 5')
+                    # loop from 3 to 8
+                    for i in range(3, 9):
+                        if row == str(i):
+                            # ----------------------------- Case 4: Winning conditions for the tiles (A3-A8) ---------------------------- #
+                            if column == 'A':
+                                # Check below right
+                                stop_game_1 = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row , X_one_column_right + str(X_one_row_down), token, place_token_flag)
+                                # Check above right
+                                stop_game_2 = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
+                                # Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner.
+                                print(stop_game_1, stop_game_2)
+                                print(i)
+                                if stop_game_1 == True or stop_game_2 == True:
+                                    stop_game = True
+                                    break
+                                
+                            # ----------------------------- Case 5: Winning conditions for the tiles (B3-B8) ---------------------------- #
+                            elif column == 'B':
+                                # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                                # Check below right
+                                stop_game_1 = self.check_surroundings_coordinates(column + str(two_row_down), column + row, two_on_the_right_column + str(two_row_down), two_on_the_right_column + row , X_one_column_right + str(X_one_row_down), token, place_token_flag)
+                                # Check above right
+                                stop_game_2 = self.check_surroundings_coordinates(column + row, column + str(two_row_up), two_on_the_right_column + row, two_on_the_right_column + str(two_row_up),  X_one_column_right + str(X_one_row_up), token, place_token_flag)
+                                # Check middle
+                                stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                                # Check if at least one of the 3 possible patterns above is true or not. If so, then we have a winner.
+                                if stop_game_1 == True or stop_game_2 == True or stop_game_mid == True:
+                                    stop_game = True
+                                    break
+                                
+                
+            if column == 'K' or column == 'L':
+                
+                #--------------------- Case 6: Winning conditions for (L1,L2,K2) ----------------- #
+                if row == '1' or (row == '2' and column == 'L'):
+                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                    stop_game =  self.check_surroundings_coordinates(two_on_the_left_column + row, two_on_the_left_column + str(two_row_up), column + row, column + str(two_row_up), X_one_column_left + str(X_one_row_up), token, place_token_flag)
+                    
+                #--------------------- Case 7: Winning conditions for (L9,L10,K10) ----------------- #
+                elif (row == '9' and column == 'L') or row == '10':                    
+                    # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                    stop_game = self.check_surroundings_coordinates(two_on_the_left_column + str(two_row_down), two_on_the_left_column + row, column + str(two_row_down), column + row, X_one_column_left + str(X_one_row_down), token, place_token_flag)
+                    
+                # ----------------------------- Case 8: Winning conditions for the tiles (K2 or K9) ---------------------------- #
+                elif column == 'K' and (row == '2' or row == '9'):
+                    if row == '2':
+                        # Check above left
+                        stop_game_1 = self.check_surroundings_coordinates(two_on_the_left_column + row, two_on_the_left_column + str(two_row_up), column + row, column + str(two_row_up), X_one_column_left + str(X_one_row_up), token, place_token_flag)
+                        # Check middle
+                        stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                        #  Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner 
+                        if stop_game_1 == True or stop_game_mid == True:
+                            stop_game = True
+                    elif row == '9':
+                        # Check below left
+                        stop_game_1 = self.check_surroundings_coordinates(two_on_the_left_column + str(two_row_down), two_on_the_left_column + row, column + str(two_row_down), column + row, X_one_column_left + str(X_one_row_down), token, place_token_flag)
+                        # Check middle
+                        stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                        #  Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner 
+                        if stop_game_1 == True or stop_game_mid == True:
+                            stop_game = True
+                else:
+                    print('case 8 or 9')
+                    # loop from 3 to 8
+                    for i in range(3, 9):
+                        if row == str(i):
+                            # ----------------------------- Case 9: Winning conditions for the tiles (L3-L8) ---------------------------- #
+                            if column == 'L':
+                                # Check below left
+                                stop_game_1 = self.check_surroundings_coordinates(two_on_the_left_column + str(two_row_down), two_on_the_left_column + row, column + str(two_row_down), column + row, X_one_column_left + str(X_one_row_down), token, place_token_flag)
+                                # Check above left
+                                stop_game_2 = self.check_surroundings_coordinates(two_on_the_left_column + row, two_on_the_left_column + str(two_row_up), column + row, column + str(two_row_up), X_one_column_left + str(X_one_row_up), token, place_token_flag)
+                                # Check if at least one of the 2 possible patterns above is true or not. If so, then we have a winner.
+                                if stop_game_1 == True or stop_game_2 == True:
+                                    stop_game = True
+                                    break
+                                
+                            # ----------------------------- Case 10: Winning conditions for the tiles (K3-K8) ---------------------------- #
+                            elif column == 'K':
+                                # get_surroundings_coordinates(X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag)
+                                # Check below left
+                                stop_game_1 = self.check_surroundings_coordinates(two_on_the_left_column + str(two_row_down), two_on_the_left_column + row, column + str(two_row_down), column + row, X_one_column_left + str(X_one_row_down), token, place_token_flag)
+                                # Check above left
+                                stop_game_2 = self.check_surroundings_coordinates(two_on_the_left_column + row, two_on_the_left_column + str(two_row_up), column + row, column + str(two_row_up), X_one_column_left + str(X_one_row_up), token, place_token_flag)
+                                # Check middle
+                                stop_game_mid = self.check_surroundings_coordinates(X_one_column_left + str(X_one_row_down), X_one_column_left + str(X_one_row_up), X_one_column_right + str(X_one_row_down), X_one_column_right + str(X_one_row_up), column + row, token, place_token_flag)
+                                # Check if at least one of the 3 possible patterns above is true or not. If so, then we have a winner.
+                                print(stop_game_1, stop_game_2, stop_game_mid)
+                                
+                                if stop_game_1 == True or stop_game_2 == True or stop_game_mid == True:
+                                    stop_game = True
+                                    break
+       
+>>>>>>> new_Rules_Jeffrey_Branch
         return stop_game
     
 run_Game_Main_Function()
