@@ -194,7 +194,6 @@ class BoardClass:
         # final board
         # adding the row labels on each row will make tile checking more complex - we should discuss
         # if having labelled rows/columns is something we want to have
-
         self.board = {
             "R10": "10",
             "A10": "_",
@@ -421,7 +420,7 @@ class BoardClass:
                             print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
                             limit_reached = True
                      
-                    # Check if game has endeds    
+                    # Check if game has ended
                     if stop_game == True:
                         print('Game Over! Player ' + current_turn + ' has won the game!!!')
                         break
@@ -456,7 +455,7 @@ class BoardClass:
         flag_source = True
         flag_dest = True
        
-         # First, check if the right token is selected.
+        # First, check if the right token is selected.
         sourceCoor = input("Please enter the coordinate of the token you wish to move. \n")
         while flag_source:
             # Check if source coordinates exists on the board first
@@ -548,7 +547,7 @@ class BoardClass:
 
         self.board[coordinate] = token
         place_token_flag = True
-        # Everythime a token is added on the board, need to check if a player won.
+        # Everytime a token is added on the board, need to check if a player won.
         stop_game = self.check_winning_condition(coordinate, token, place_token_flag)
         return stop_game
     
@@ -597,7 +596,8 @@ class BoardClass:
                 condition = True
                 
         return condition
-        
+
+    # to modify to add variables for calculating heuristic
     def check_surroundings_coordinates(self,X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag):
          # get the coordinates of all the 4 corners of the tiles where an X can be formed.
          x1 = X_bottom_left_coord
@@ -613,7 +613,7 @@ class BoardClass:
         
         """For this function, we check the surroundings of the location of the token added. If an X is formed, there is a winner depending 
             on whether it is a legal winning condition or not"""
-        
+
         stop_game = False
         
         if token == "_":
@@ -820,7 +820,98 @@ class BoardClass:
                     if stop_game_1 == True or stop_game_2 == True or stop_game_3 == True or stop_game_4 == True or stop_game_mid == True:
                         stop_game = True
         return stop_game
+
+
+
+
+
+
+
+    """ ****************************** AI MATERIAL ******************************"""
+
+    # store counter values in a list? or int?
+
+    # number of possible winning states for each player - calculate for both max and min in check_winning_condition()
+    winning_states_max = 3
+    winning_states_min = 3
+
+    # moves each player has made towards a winning state - calculate for both max and min in check_winning_condition()
+    moves_from_x_max = 3
+    moves_from_x_min = 3
+
+    # whether or not it is necessary for a player to block the other due to them being close to forming an X
+    max_winning = None
+
+
+    def num_of_winning_states(self):
+        num_max = self.winning_states_max
+        num_min = self.winning_states_min
+        num = num_max - num_min
+        return num
+
+    def close_to_x(self):
+        moves_max = self.moves_from_x_max
+        moves_min = self.moves_from_x_min
+        moves = moves_max - moves_min
+        return moves
+
+    def block_x(self):
+        to_block = 0
+        max_win = self.max_winning
+        if max_win is True:
+            to_block = -1
+        elif max_win is False:
+            to_block = 1
+        return to_block
+
+    def calculate_heuristic(self):
+        # the number of possible winning configurations
+        winning_configs = 0.2 * self.num_of_winning_states()
+        # how close a player is to a winning state
+        winning_state = 0.3 * self.close_to_x()
+        # how close a player is to blocking another player
+        blocked_state = 0.5 * self.block_x()
+
+        heuristic = winning_configs + winning_state + blocked_state
+
+        return heuristic
+
+    def max(self):
+        return "ahh"
+
+    def min(self):
+        return ""
+
+
+
+    """ pseudocode algorithm for depth-limited minimax and alpha-beta pruning - will need to credit this in the report
     
+    function alphabeta(node, depth, α, β, maximizingPlayer) is
+    if depth = 0 or node is a terminal node then
+        return the heuristic value of node
+    if maximizingPlayer then
+        value := −∞
+        for each child of node do
+            value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
+            α := max(α, value)
+            if α ≥ β then
+                break (* β cut-off *)
+        return value
+    else
+        value := +∞
+        for each child of node do
+            value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
+            β := min(β, value)
+            if α ≥ β then
+                break (* α cut-off *)
+        return value
+    
+    
+    (* Initial call *)
+    alphabeta(origin, depth, −∞, +∞, TRUE)
+    """
+
+
 run_Game_Main_Function()
 
 
