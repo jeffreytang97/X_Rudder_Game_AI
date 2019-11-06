@@ -194,6 +194,7 @@ class BoardClass:
         # final board
         # adding the row labels on each row will make tile checking more complex - we should discuss
         # if having labelled rows/columns is something we want to have
+
         self.board = {
             "R10": "10",
             "A10": "_",
@@ -420,7 +421,7 @@ class BoardClass:
                             print("Sorry, we have reached the maximum total amount of moves permitted which is 30.\n")
                             limit_reached = True
                      
-                    # Check if game has ended
+                    # Check if game has endeds    
                     if stop_game == True:
                         print('Game Over! Player ' + current_turn + ' has won the game!!!')
                         break
@@ -455,7 +456,7 @@ class BoardClass:
         flag_source = True
         flag_dest = True
        
-        # First, check if the right token is selected.
+         # First, check if the right token is selected.
         sourceCoor = input("Please enter the coordinate of the token you wish to move. \n")
         while flag_source:
             # Check if source coordinates exists on the board first
@@ -547,7 +548,7 @@ class BoardClass:
 
         self.board[coordinate] = token
         place_token_flag = True
-        # Everytime a token is added on the board, need to check if a player won.
+        # Everythime a token is added on the board, need to check if a player won.
         stop_game = self.check_winning_condition(coordinate, token, place_token_flag)
         return stop_game
     
@@ -596,8 +597,7 @@ class BoardClass:
                 condition = True
                 
         return condition
-
-    # to modify to add variables for calculating heuristic
+        
     def check_surroundings_coordinates(self,X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, token, place_token_flag):
          # get the coordinates of all the 4 corners of the tiles where an X can be formed.
          x1 = X_bottom_left_coord
@@ -613,7 +613,7 @@ class BoardClass:
         
         """For this function, we check the surroundings of the location of the token added. If an X is formed, there is a winner depending 
             on whether it is a legal winning condition or not"""
-
+        
         stop_game = False
         
         if token == "_":
@@ -820,14 +820,8 @@ class BoardClass:
                     if stop_game_1 == True or stop_game_2 == True or stop_game_3 == True or stop_game_4 == True or stop_game_mid == True:
                         stop_game = True
         return stop_game
-
-
-
-
-
-
-
-    """ ****************************** AI MATERIAL ******************************"""
+    
+     """ ****************************** AI MATERIAL ******************************"""
 
     # store counter values in a list? or int?
 
@@ -885,7 +879,7 @@ class BoardClass:
 
 
     """ pseudocode algorithm for depth-limited minimax and alpha-beta pruning - will need to credit this in the report
-    
+     
     function alphabeta(node, depth, α, β, maximizingPlayer) is
     if depth = 0 or node is a terminal node then
         return the heuristic value of node
@@ -912,6 +906,7 @@ class BoardClass:
     """
 
 
+    
 run_Game_Main_Function()
 
 
