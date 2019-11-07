@@ -699,40 +699,11 @@ class BoardClass:
     
     """ ****************************** AI MATERIAL ******************************"""
 
-    # store counter values in a list? or int?
-
-    # number of possible winning states for each player - calculate for both max and min in check_winning_condition()
-    winning_states_max = 3
-    winning_states_min = 3
-
-    # moves each player has made towards a winning state - calculate for both max and min in check_winning_condition()
-    moves_from_x_max = 3
-    moves_from_x_min = 3
-
-    # whether or not it is necessary for a player to block the other due to them being close to forming an X
-    max_winning = None
-
-    def close_to_x(self):
-        moves_max = self.moves_from_x_max
-        moves_min = self.moves_from_x_min
-        moves = moves_max - moves_min
-        return moves
-
-    def block_x(self):
-        to_block = 0
-        max_win = self.max_winning
-        if max_win is True:
-            to_block = -1
-        elif max_win is False:
-            to_block = 1
-        return to_block
-
     # returns an int for number of winning combinations for a given tile
     def determine_possibilities_for_one_tile(self, token, coordinate):
         column, row = self.seperate_coordinate_values(coordinate)
-        poss_counter = 0
-        poss_density = 0
-            
+        opposite_token = 'O'
+
         # To get column C if we added a token in column A for example
         two_on_the_right_column = chr(ord(column) + 2)
         # To get move 2 column to the left
@@ -749,11 +720,6 @@ class BoardClass:
         X_one_row_up = int(row) + 1
         # to get the center tile of the possible X formed below
         X_one_row_down = int(row) - 1
-        
-        if token == 'X':
-            opposite_token = 'O'
-        else:
-            opposite_token = 'X'
     
         """
         1- Check bottom left X possibility
@@ -799,28 +765,52 @@ class BoardClass:
         X_center_coord_5 = column + row
         
         # Assume the program will check for all the X formed possibilities in the surroundings
-        poss_counter_1, counter_density_1 = self.check_surrounding_X_possibilities(poss_counter, token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
-        poss_counter_2, counter_density_2 = self.check_surrounding_X_possibilities(poss_counter, token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
-        poss_counter_3, counter_density_3 = self.check_surrounding_X_possibilities(poss_counter, token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
-        poss_counter_4, counter_density_4 = self.check_surrounding_X_possibilities(poss_counter, token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
-        poss_counter_5, counter_density_5 = self.check_surrounding_X_possibilities(poss_counter, token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+        # calculating for X (max) token
+        poss_counter_1, counter_density_1, X_block_1 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        poss_counter_2, counter_density_2, X_block_2 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        poss_counter_3, counter_density_3, X_block_3 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
         # add all the counter for one tile together
         possibilities_counter = poss_counter_1 + poss_counter_2 + poss_counter_3 + poss_counter_4 + poss_counter_5
+        # take the highest tile density as the potential density when calculating the heuristic of placing a tile
         poss_density = max(counter_density_1, counter_density_2, counter_density_3, counter_density_4, counter_density_5)
+        # take the highest block value for same reason as above?
+        X_block = max(X_block_1, X_block_2, X_block_3, X_block_4, X_block_5)
+
+        # calculating for O (min) token
+        opposite_poss_counter_1, opposite_counter_density_1, opposite_X_block_1 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        opposite_poss_counter_2, opposite_counter_density_2, opposite_X_block_2 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        opposite_poss_counter_3, opposite_counter_density_3, opposite_X_block_3 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+
+        # add all the counter for one tile together
+        opposite_possibilities_counter = opposite_poss_counter_1 + opposite_poss_counter_2 + opposite_poss_counter_3 + opposite_poss_counter_4 + opposite_poss_counter_5
+        # take the highest tile density as the potential density when calculating the heuristic of placing a tile
+        opposite_poss_density = max(opposite_counter_density_1, opposite_counter_density_2, opposite_counter_density_3, opposite_counter_density_4, opposite_counter_density_5)
+        # take the highest block value for same reason as above?
+        opposite_X_block = max(opposite_X_block_1, opposite_X_block_2, opposite_X_block_3, opposite_X_block_4, opposite_X_block_5)
+
 
         # return the number of possibilities to form an X for one tile.
-        return possibilities_counter, poss_density
+        return possibilities_counter, poss_density, X_block, opposite_possibilities_counter, opposite_poss_density, opposite_X_block
 
-    def check_surrounding_X_possibilities(self, poss_counter, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
+
+    def check_surrounding_X_possibilities(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, opposite_token):
         dict = self.board
         poss_density = 0
+        poss_counter = 0
+        X_block = 0
+
         if (X_bottom_left_coord and X_upper_left_coord and  X_bottom_right_coord and X_upper_right_coord and X_center_coord) in dict:
 
             # If the surroundings X is empty or does not contain the opposite token, +1 possibility
             if dict.get(X_bottom_left_coord) == ("_" or token) and dict.get(X_upper_left_coord) == ("_" or token) and dict.get(X_bottom_right_coord) == ("_" or token) and dict.get(X_upper_right_coord) == ("_" or token) and dict.get(X_center_coord) == ("_" or token):
                 poss_counter += 1
 
+            # section to measure how close a player is to forming an X
             if dict.get(X_bottom_left_coord) == token:
                 poss_density += 1
 
@@ -836,20 +826,52 @@ class BoardClass:
             if dict.get(X_center_coord) == token:
                 poss_density += 1
 
+            # section to measure if an opponent can block an X
+            column, row = self.seperate_coordinate_values(X_center_coord)
+            left_coord = chr(ord(column) - 1) + row
+            right_coord = chr(ord(column) + 1) + row
+            if left_coord == opposite_token:
+                X_block += 1
+            if right_coord == opposite_token:
+                X_block += 1
+
         else:
             # out of the board
             pass
 
-        return poss_counter, poss_density
-            
+        return poss_counter, poss_density, X_block
 
-    #e(n) = number of X possibilities - number of O possibilities
+    # store counter values in a list? or int?
+    # if token with highest density has opposing token on either side on centre, return opposing value
+    def block_x(self, max_state_density, min_state_density, max_blocked, min_blocked):
+        to_block = 0
+
+        # checking if a tile is worth blocking or not
+        if max_state_density >= 3:
+            to_block += -2
+        elif min_state_density >= 3:
+            to_block += 2
+        else:
+            to_block += 0
+
+        # checking if a tile has already been blocked
+        # these values probably need to be changed
+        if max_blocked == 1:
+            to_block += -1
+        if max_blocked == 2:
+            to_block += -2
+        if min_blocked == 1:
+            to_block += 1
+        if min_blocked == 2:
+            to_block += 2
+
+        return to_block
+
+    # e(n) = number of X possibilities - number of O possibilities
     # We must check all the possibilities for all the tokens on the board
     # then, we calculate the heuristic value and we will select on which tile to be moved or placed.
-    # heuristic = total_winning_X_States - total_winning_O_States
     def calculate_heuristic(self, coordinate):
-        max_winning_configs, max_state_density = self.determine_possibilities_for_one_tile('X', coordinate)
-        min_winning_configs, min_state_density = self.determine_possibilities_for_one_tile('O', coordinate)
+        max_winning_configs, max_state_density, max_blocked, min_winning_configs, min_state_density, min_blocked = self.determine_possibilities_for_one_tile('X', coordinate)
 
         # the number of possible winning configurations
         # add functionality to check multiple tiles for radius checking in future - maybe with for loop
@@ -859,17 +881,17 @@ class BoardClass:
         state_density = 0.3 * (max_state_density - min_state_density)
 
         # how close a player is to blocking another player
-        blocked_state = 0.5 * self.block_x()
+        block_state = 0.5 * self.block_x(max_state_density, min_state_density, max_blocked, min_blocked)
 
-        heuristic = winning_configs + state_density + blocked_state
+        heuristic = winning_configs + state_density + block_state
 
         return heuristic
 
-    """def max(self):
+    def max(self):
         return "ahh"
 
     def min(self):
-        return """""
+        return "ahh"
 
 
 
@@ -900,8 +922,6 @@ class BoardClass:
     alphabeta(origin, depth, −∞, +∞, TRUE)
     """
 
-
-        
 run_Game_Main_Function()
 
 
