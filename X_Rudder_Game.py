@@ -845,27 +845,35 @@ class BoardClass:
     # if token with highest density has opposing token on either side on centre, return opposing value
     def block_x(self, max_state_density, min_state_density, max_blocked, min_blocked):
         to_block = 0
+        blocked = 0
 
-        # checking if a tile is worth blocking or not
+        # checking if a tile is worth blocking
+        # these values probably need to be changed
         if max_state_density >= 3:
-            to_block += -2
-        elif min_state_density >= 3:
-            to_block += 2
-        else:
-            to_block += 0
+            if max_blocked == 1:
+                to_block -= 2
+            elif max_blocked == 2:
+                to_block -= 3
 
-        # checking if a tile has already been blocked
+        if min_state_density >= 3:
+            if min_blocked == 1:
+                to_block += 2
+            elif min_blocked == 2:
+                to_block += 3
+
         # these values probably need to be changed
         if max_blocked == 1:
-            to_block += -1
-        if max_blocked == 2:
-            to_block += -2
-        if min_blocked == 1:
-            to_block += 1
-        if min_blocked == 2:
-            to_block += 2
+            blocked -= 0.2
+        if max_blocked == 1:
+            blocked -= 0.2
+        if max_blocked == 1:
+            blocked += 0.2
+        if max_blocked == 1:
+            blocked += 0.2
+        
+        block_value = to_block + blocked
 
-        return to_block
+        return block_value
 
     # e(n) = number of X possibilities - number of O possibilities
     # We must check all the possibilities for all the tokens on the board
