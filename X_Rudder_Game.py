@@ -772,7 +772,7 @@ class BoardClass:
         poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
         poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
-        # add all the counter for one tile together
+        # add all the counters for one tile together
         possibilities_counter = poss_counter_1 + poss_counter_2 + poss_counter_3 + poss_counter_4 + poss_counter_5
         # take the highest tile density as the potential density when calculating the heuristic of placing a tile
         poss_density = max(counter_density_1, counter_density_2, counter_density_3, counter_density_4, counter_density_5)
@@ -786,7 +786,7 @@ class BoardClass:
         opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
         opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
-        # add all the counter for one tile together
+        # add all the counters for one tile together
         opposite_possibilities_counter = opposite_poss_counter_1 + opposite_poss_counter_2 + opposite_poss_counter_3 + opposite_poss_counter_4 + opposite_poss_counter_5
         # take the highest tile density as the potential density when calculating the heuristic of placing a tile
         opposite_poss_density = max(opposite_counter_density_1, opposite_counter_density_2, opposite_counter_density_3, opposite_counter_density_4, opposite_counter_density_5)
@@ -798,11 +798,17 @@ class BoardClass:
         return possibilities_counter, poss_density, X_block, opposite_possibilities_counter, opposite_poss_density, opposite_X_block
 
 
-    def check_surrounding_X_possibilities(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord, opposite_token):
+    def check_surrounding_X_possibilities(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
         dict = self.board
+        opposite_token = None
         poss_density = 0
         poss_counter = 0
         X_block = 0
+
+        if token == 'X':
+            opposite_token = 'O'
+        elif token == 'O':
+            opposite_token = 'X'
 
         if (X_bottom_left_coord and X_upper_left_coord and  X_bottom_right_coord and X_upper_right_coord and X_center_coord) in dict:
 
@@ -813,16 +819,12 @@ class BoardClass:
             # section to measure how close a player is to forming an X
             if dict.get(X_bottom_left_coord) == token:
                 poss_density += 1
-
             if dict.get(X_upper_left_coord) == token:
                 poss_density += 1
-
             if dict.get(X_bottom_right_coord) == token:
                 poss_density += 1
-
             if dict.get(X_upper_right_coord) == token:
                 poss_density += 1
-
             if dict.get(X_center_coord) == token:
                 poss_density += 1
 
