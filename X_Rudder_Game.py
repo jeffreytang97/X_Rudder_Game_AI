@@ -860,19 +860,19 @@ class BoardClass:
                 to_block += 2
             elif min_blocked == 2:
                 to_block += 3
-
+                
         # these values probably need to be changed
         if max_blocked == 1:
             blocked -= 0.2
-        if max_blocked == 1:
+        if max_blocked == 2:
             blocked -= 0.2
         if max_blocked == 1:
             blocked += 0.2
-        if max_blocked == 1:
+        if max_blocked == 2:
             blocked += 0.2
         
         block_value = to_block + blocked
-
+        
         return block_value
 
     # e(n) = number of X possibilities - number of O possibilities
