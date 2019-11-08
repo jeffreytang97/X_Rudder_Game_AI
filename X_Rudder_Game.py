@@ -452,6 +452,9 @@ class BoardClass:
         placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
         confirmChoice = 0
         
+        """
+        Confirmation Block for each choice.
+        """
         if(placeOrMove == "1" or placeOrMove == "2"):
             while(confirmChoice != "1"):
                 # This is to prevent taking option 2 when no token is available to be moved    
@@ -484,7 +487,10 @@ class BoardClass:
                 confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
                 if(confirmChoice == 1):
                     break
-                    
+        """
+        Confirmation Block ends here
+        """            
+        
         
         # When player selected to add a token   
         if(placeOrMove == "1"):
@@ -509,18 +515,21 @@ class BoardClass:
                 print("Sorry, we have reached the maximum total amount of moves permitted which is 15.\n")
                 #limit_reached = True
                 
-                
+        
+        """
+        Return values to check the Winning conditions.
+        """
         return moveTokenHuman, placeTokenHuman, stop_game, losing_on_move
         
     
-    """The AI's turn. """
+    """The AI's turn method. Will call the Heuristic + Minimax methods"""
     def AI_turn(self):
         
         """
-        Would need a way to track what the AI does, if it decides to place a token or move a token.
-        Once that's found, will use the heuristic functions we have and the tree for it to make a decision.
-        
-        Then return the moveTokenAI and placeTokenAI.
+        Would need a way to track if AI did a MOVE or PLACE operation.
+        Once that's found, will use the heuristic functions we created and the tree for it to make a decision.
+        Once everything is done and the AI has made a move,
+        return the moveTokenAI and placeTokenAI.
         
         """
         
@@ -622,13 +631,68 @@ class BoardClass:
                 # MAX = Computer AI = X, MIN = user = 0
                 print("You are O. Computer AI will be X. Computer AI starts")
                 
-                moveToken = 0
-                current_turn = 'O'
-                placeToken = 0
+                moveTokenHuman = 0
+                moveTokenAI = 0
+                #current_turn = 'X'
+                placeTokenHuman = 0
+                placeTokenAI = 0
                 placeOrMove = 0
                 stop_game = False
                 losing_on_move = False
                 limit_reached = False
+                
+                
+                """
+                Thinking of calling the AI_turn here for it to make the first move and increments the moveTokenAI or placeTokenAI so that the sum becomes ODD.
+                Since it's ODD, then goes in While loop and check ODD
+                IF ODD, Human turn -> O
+                Else EVEN, AI Turn -> X
+                """
+                
+                while(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI < 60):
+                    """
+                    Once the game starts, the human will be X
+                    """
+                    if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 != 0):
+                        current_turn = 'O'
+                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
+                        
+                    else:
+                        current_turn = 'X'
+                        
+                        
+                        #THIS IS TEMPORARY, USED TO TEST THE TOKEN ALTERNATION (X OR O) BETWEEN HUMAN AND AI. REMOVE ONCE THE AI PART IS DONE
+                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
+                        
+                        
+                        """
+                        WILL NEED TO CALL THE AI_turn HERE.
+                        """
+                        
+                    
+                    """
+                    Below will check the condition of the game if it has ended and who's the winner.
+                    Takes in the returned values from the method "Human_turn" and verify with the conditions below.
+                    CHECKING THE CONDITION WILL NOT BE DONE INSIDE THE "Human_turn" METHOD. 
+                    """                   
+                    # Check if game has endeds    
+                    if stop_game == True:
+                        print('Game Over! Player ' + current_turn + ' has won the game!!!')
+                        break
+                    elif losing_on_move == True:
+                        if current_turn == 'X':
+                            opposite_token = 'O'
+                        else:
+                            opposite_token = 'X'
+                        
+                        print('The token you moved made you lose the game... Therefore, ' + opposite_token + ' has won the game!!!')
+                        break
+                    elif (moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) >= 60:
+                        print('Game has ended without a winner! IT IS A TIE GAME!!!')
+                        break
+                    
+                    print(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI)
+                  
                 
     
     def coordinate_move(self, current_turn):
