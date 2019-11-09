@@ -6,7 +6,7 @@ Comp 472 - X-Rudder Game Development
 Python Script
 Date Created: 2019-09-23
 
-Author:
+Authors:
     - Jeffrey Tang
     - Hong Yi Wang
     - Ethan Tran
@@ -17,7 +17,7 @@ PS: Create a main function to run all the functions required instead of calling 
 
 """
 
-import sys
+from GameTree import Node
 
 # Just an example
 def initiate_game():
@@ -32,6 +32,8 @@ def run_Game_Main_Function():
     Board.playerChoice()
 
 class BoardClass:
+    origin_node = Node()
+
     def __init__(self):
         print("Here is the board")
     
@@ -358,7 +360,7 @@ class BoardClass:
             if increment % 13 == 0:
                 print('')
             increment += 1
-            
+
             
     def user_turn(self, moveToken, current_turn, placeToken, placeOrMove, stop_game, losing_on_move, limit_reached):
         
@@ -932,9 +934,11 @@ class BoardClass:
     """ ****************************** AI MATERIAL ******************************"""
 
     # returns an int for number of winning combinations for a given tile
-    def determine_possibilities_for_one_tile(self, token, coordinate):
+    def determine_possibilities_for_one_tile(self, node):
+        coordinate = node.data
         column, row = self.seperate_coordinate_values(coordinate)
-        opposite_token = 'O'
+        max_token = 'X'
+        min_token = 'O'
 
         # To get column C if we added a token in column A for example
         two_on_the_right_column = chr(ord(column) + 2)
@@ -998,11 +1002,11 @@ class BoardClass:
         
         # Assume the program will check for all the X formed possibilities in the surroundings
         # calculating for X (max) token
-        poss_counter_1, counter_density_1, X_block_1 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
-        poss_counter_2, counter_density_2, X_block_2 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
-        poss_counter_3, counter_density_3, X_block_3 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
-        poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
-        poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+        poss_counter_1, counter_density_1, X_block_1 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        poss_counter_2, counter_density_2, X_block_2 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        poss_counter_3, counter_density_3, X_block_3 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
         # add all the counters for one tile together
         possibilities_counter = poss_counter_1 + poss_counter_2 + poss_counter_3 + poss_counter_4 + poss_counter_5
@@ -1012,11 +1016,11 @@ class BoardClass:
         X_block = max(X_block_1, X_block_2, X_block_3, X_block_4, X_block_5)
 
         # calculating for O (min) token
-        opposite_poss_counter_1, opposite_counter_density_1, opposite_X_block_1 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
-        opposite_poss_counter_2, opposite_counter_density_2, opposite_X_block_2 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
-        opposite_poss_counter_3, opposite_counter_density_3, opposite_X_block_3 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
-        opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
-        opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(opposite_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+        opposite_poss_counter_1, opposite_counter_density_1, opposite_X_block_1 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        opposite_poss_counter_2, opposite_counter_density_2, opposite_X_block_2 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        opposite_poss_counter_3, opposite_counter_density_3, opposite_X_block_3 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
         # add all the counters for one tile together
         opposite_possibilities_counter = opposite_poss_counter_1 + opposite_poss_counter_2 + opposite_poss_counter_3 + opposite_poss_counter_4 + opposite_poss_counter_5
@@ -1025,10 +1029,8 @@ class BoardClass:
         # take the highest block value for same reason as above?
         opposite_X_block = max(opposite_X_block_1, opposite_X_block_2, opposite_X_block_3, opposite_X_block_4, opposite_X_block_5)
 
-
         # return the number of possibilities to form an X for one tile.
         return possibilities_counter, poss_density, X_block, opposite_possibilities_counter, opposite_poss_density, opposite_X_block
-
 
     def check_surrounding_X_possibilities(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
         dict = self.board
@@ -1112,8 +1114,8 @@ class BoardClass:
     # e(n) = number of X possibilities - number of O possibilities
     # We must check all the possibilities for all the tokens on the board
     # then, we calculate the heuristic value and we will select on which tile to be moved or placed.
-    def calculate_heuristic(self, coordinate):
-        max_winning_configs, max_state_density, max_blocked, min_winning_configs, min_state_density, min_blocked = self.determine_possibilities_for_one_tile('X', coordinate)
+    def calculate_heuristic(self, node):
+        max_winning_configs, max_state_density, max_blocked, min_winning_configs, min_state_density, min_blocked = self.determine_possibilities_for_one_tile(node)
 
         # the number of possible winning configurations
         # add functionality to check multiple tiles for radius checking in future - maybe with for loop
@@ -1134,8 +1136,6 @@ class BoardClass:
 
     def min(self):
         return "ahh"
-
-
 
     """ pseudocode algorithm for depth-limited minimax and alpha-beta pruning - will need to credit this in the report
      
@@ -1163,6 +1163,28 @@ class BoardClass:
     (* Initial call *)
     alphabeta(origin, depth, −∞, +∞, TRUE)
     """
+
+    def alpha_beta(self, node, depth, alpha, beta, maximizing_player):
+        if depth == 0 or node == 'terminal':
+            return self.calculate_heuristic(node)
+        if maximizing_player:
+            value = float('-inf')
+            for child in node.children:
+                value = max(value, self.alpha_beta(child, depth - 1, alpha, beta, False))
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    # beta cut-off
+                    break
+            return value
+        else:
+            value = float('inf')
+            for child in node.children:
+                value = min(value, self.alpha_beta(child, depth - 1, alpha, beta, True))
+                beta = min(beta, value)
+                if alpha >= beta:
+                    # alpha cut-off
+                    break
+            return value
 
 run_Game_Main_Function()
 
