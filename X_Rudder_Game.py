@@ -29,11 +29,10 @@ def run_Game_Main_Function():
     Board = BoardClass()
     Board.create_board()
     Board.print_board()
+
     Board.playerChoice()
 
 class BoardClass:
-    origin_node = Node()
-
     def __init__(self):
         print("Here is the board")
     
@@ -553,6 +552,12 @@ class BoardClass:
             self.user_turn(moveToken, current_turn, placeToken, placeOrMove, stop_game, losing_on_move, limit_reached)
         else:
             print("Playing against computer \n")
+            tree_board = BoardClass()
+            tree_board.create_board()
+            tree_board = self.board
+            root_node = Node(tree_board, None)
+            self.generate_tree(root_node, True, 3, tree_board)
+            value = self.alpha_beta(root_node, 3, float('-inf'), float('inf'), True)
             choose_turn = input("Press 1 if you want to play first (X). Press any other key if you want to play second (O): \n")
             if choose_turn == '1':
                 # MAX = User = X, MIN = computer AI = 0
@@ -588,7 +593,7 @@ class BoardClass:
                         
                     else:
                         current_turn = 'O'
-                        
+
                         
                         #THIS IS TEMPORARY, USED TO TEST THE TOKEN ALTERNATION (X OR O) BETWEEN HUMAN AND AI. REMOVE ONCE THE AI PART IS DONE
                         moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
@@ -597,18 +602,19 @@ class BoardClass:
                         """
                         WILL NEED TO CALL THE AI HERE.
                         """
-                        
-                    
+
+
+
                     """
                     Below will check the condition of the game if it has ended and who's the winner.
                     Takes in the returned values from the method "Human_turn" and verify with the conditions below.
                     CHECKING THE CONDITION WILL NOT BE DONE INSIDE THE "Human_turn" METHOD. 
                     """                   
-                    # Check if game has endeds    
-                    if stop_game == True:
+                    # Check if game has ended
+                    if stop_game is True:
                         print('Game Over! Player ' + current_turn + ' has won the game!!!')
                         break
-                    elif losing_on_move == True:
+                    elif losing_on_move is True:
                         if current_turn == 'X':
                             opposite_token = 'O'
                         else:
@@ -935,7 +941,7 @@ class BoardClass:
 
     # returns an int for number of winning combinations for a given tile
     def determine_possibilities_for_one_tile(self, node):
-        coordinate = node.data
+        coordinate = node.potential_coordinate
         column, row = self.seperate_coordinate_values(coordinate)
         max_token = 'X'
         min_token = 'O'
@@ -1002,11 +1008,11 @@ class BoardClass:
         
         # Assume the program will check for all the X formed possibilities in the surroundings
         # calculating for X (max) token
-        poss_counter_1, counter_density_1, X_block_1 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
-        poss_counter_2, counter_density_2, X_block_2 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
-        poss_counter_3, counter_density_3, X_block_3 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
-        poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
-        poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(max_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+        poss_counter_1, counter_density_1, X_block_1 = self.check_surrounding_X_possibilities(max_token, node.potential_board, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        poss_counter_2, counter_density_2, X_block_2 = self.check_surrounding_X_possibilities(max_token, node.potential_board,X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        poss_counter_3, counter_density_3, X_block_3 = self.check_surrounding_X_possibilities(max_token, node.potential_board,X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        poss_counter_4, counter_density_4, X_block_4 = self.check_surrounding_X_possibilities(max_token, node.potential_board,X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        poss_counter_5, counter_density_5, X_block_5 = self.check_surrounding_X_possibilities(max_token, node.potential_board,X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
         # add all the counters for one tile together
         possibilities_counter = poss_counter_1 + poss_counter_2 + poss_counter_3 + poss_counter_4 + poss_counter_5
@@ -1016,11 +1022,11 @@ class BoardClass:
         X_block = max(X_block_1, X_block_2, X_block_3, X_block_4, X_block_5)
 
         # calculating for O (min) token
-        opposite_poss_counter_1, opposite_counter_density_1, opposite_X_block_1 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
-        opposite_poss_counter_2, opposite_counter_density_2, opposite_X_block_2 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
-        opposite_poss_counter_3, opposite_counter_density_3, opposite_X_block_3 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
-        opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
-        opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(min_token, X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
+        opposite_poss_counter_1, opposite_counter_density_1, opposite_X_block_1 = self.check_surrounding_X_possibilities(min_token, node.potential_board,X_bottom_left_coord_1, X_upper_left_coord_1, X_bottom_right_coord_1, X_upper_right_coord_1, X_center_coord_1)
+        opposite_poss_counter_2, opposite_counter_density_2, opposite_X_block_2 = self.check_surrounding_X_possibilities(min_token, node.potential_board,X_bottom_left_coord_2, X_upper_left_coord_2, X_bottom_right_coord_2, X_upper_right_coord_2, X_center_coord_2)
+        opposite_poss_counter_3, opposite_counter_density_3, opposite_X_block_3 = self.check_surrounding_X_possibilities(min_token, node.potential_board,X_bottom_left_coord_3, X_upper_left_coord_3, X_bottom_right_coord_3, X_upper_right_coord_3, X_center_coord_3)
+        opposite_poss_counter_4, opposite_counter_density_4, opposite_X_block_4 = self.check_surrounding_X_possibilities(min_token, node.potential_board,X_bottom_left_coord_4, X_upper_left_coord_4, X_bottom_right_coord_4, X_upper_right_coord_4, X_center_coord_4)
+        opposite_poss_counter_5, opposite_counter_density_5, opposite_X_block_5 = self.check_surrounding_X_possibilities(min_token, node.potential_board,X_bottom_left_coord_5, X_upper_left_coord_5, X_bottom_right_coord_5, X_upper_right_coord_5, X_center_coord_5)
 
         # add all the counters for one tile together
         opposite_possibilities_counter = opposite_poss_counter_1 + opposite_poss_counter_2 + opposite_poss_counter_3 + opposite_poss_counter_4 + opposite_poss_counter_5
@@ -1032,8 +1038,8 @@ class BoardClass:
         # return the number of possibilities to form an X for one tile.
         return possibilities_counter, poss_density, X_block, opposite_possibilities_counter, opposite_poss_density, opposite_X_block
 
-    def check_surrounding_X_possibilities(self, token, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
-        dict = self.board
+    def check_surrounding_X_possibilities(self, token, potential_board, X_bottom_left_coord, X_upper_left_coord, X_bottom_right_coord, X_upper_right_coord, X_center_coord):
+        dict = potential_board
         opposite_token = None
         poss_density = 0
         poss_counter = 0
@@ -1131,41 +1137,8 @@ class BoardClass:
 
         return heuristic
 
-    def max(self):
-        return "ahh"
-
-    def min(self):
-        return "ahh"
-
-    """ pseudocode algorithm for depth-limited minimax and alpha-beta pruning - will need to credit this in the report
-     
-    function alphabeta(node, depth, α, β, maximizingPlayer) is
-    if depth = 0 or node is a terminal node then
-        return the heuristic value of node
-    if maximizingPlayer then
-        value := −∞
-        for each child of node do
-            value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
-            α := max(α, value)
-            if α ≥ β then
-                break (* β cut-off *)
-        return value
-    else
-        value := +∞
-        for each child of node do
-            value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
-            β := min(β, value)
-            if α ≥ β then
-                break (* α cut-off *)
-        return value
-    
-    
-    (* Initial call *)
-    alphabeta(origin, depth, −∞, +∞, TRUE)
-    """
-
     def alpha_beta(self, node, depth, alpha, beta, maximizing_player):
-        if depth == 0 or node == 'terminal':
+        if depth == 0 or node.children == []:
             return self.calculate_heuristic(node)
         if maximizing_player:
             value = float('-inf')
@@ -1185,6 +1158,66 @@ class BoardClass:
                     # alpha cut-off
                     break
             return value
+
+    """ pseudocode algorithm for depth-limited minimax and alpha-beta pruning - will need to credit this in the report
+
+    function alphabeta(node, depth, α, β, maximizingPlayer) is
+    if depth = 0 or node is a terminal node then
+        return the heuristic value of node
+    if maximizingPlayer then
+        value := −∞
+        for each child of node do
+            value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
+            α := max(α, value)
+            if α ≥ β then
+                break (* β cut-off *)
+        return value
+    else
+        value := +∞
+        for each child of node do
+            value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
+            β := min(β, value)
+            if α ≥ β then
+                break (* α cut-off *)
+        return value
+
+
+    (* Initial call *)
+    alphabeta(origin, depth, −∞, +∞, TRUE)
+    """
+
+    # function for generating a tree of depth 3 for possible moves for max and min
+    # nodes will contain the coordinate or the key value of the board dictionary
+    # a second board is created that is a copy of the actual game board
+    # this board is used to help generate the tree that will be used by alpha-beta
+    # this function currently only generates trees for placing tokens... NOT moving tokens
+    def generate_tree(self, current_node, is_max, depth, tree_board, first_run):
+        for potential_tile in tree_board:
+            if potential_tile is not current_node.potential_coordinate:
+                if potential_tile.value == "_":
+                    # once a depth of 3 is reached for potential nodes, reset the tree_board and depth
+                    # for other branches
+                    if depth == 0 and first_run is True:
+                        tree_board = self.board
+                        depth = 3
+                        while depth > 0:
+                            if is_max is True:
+                                tree_board[potential_tile] = 'X'
+                                child_node = Node(tree_board, potential_tile)
+                                current_node.add_child(child_node)
+                                depth -= 1
+                                self.generate_tree(child_node, not is_max, depth, tree_board, False)
+                            elif is_max is False:
+                                tree_board[potential_tile] = 'O'
+                                child_node = Node(tree_board, potential_tile)
+                                current_node.add_child(child_node)
+                                depth -= 1
+                                self.generate_tree(child_node, not is_max, depth, tree_board, False)
+
+    # want to keep tiles for depth of 3 when traversing possibilities
+    # cases: start of the game, all tiles from root node for max
+    #      : tree is generated with max at the top of depth
+    #      : tree is generated with min at the top of depth
 
 run_Game_Main_Function()
 
