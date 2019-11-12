@@ -491,30 +491,29 @@ class BoardClass:
         """
         Confirmation Block ends here
         """            
-        
-        
+
         # When player selected to add a token   
-        if(placeOrMove == "1"):
-            if(placeTokenHuman < 15):
-                #limit_reached = False
+        if placeOrMove == "1":
+            if placeTokenHuman < 15:
+                # limit_reached = False
                 coordinate = input("Please input your coordinate (X's turn): \n")
                 token = current_turn
                 stop_game = self.coordinate_selection(coordinate, token)
                 placeTokenHuman += 1
             else:
                 print("Sorry, you have reached the maximum amount of token.\n")
-                #limit_reached = True
+                # limit_reached = True
         
         # When player selected to move a token           
-        elif(placeOrMove == "2"):
+        elif placeOrMove == "2":
             print('Number of moves used by you: ', moveTokenHuman+1)
-            if(moveTokenHuman < 15):
+            if moveTokenHuman < 15:
                 stop_game, losing_on_game = self.coordinate_move(current_turn)
                 moveTokenHuman += 1
-                #limit_reached = False
+                # limit_reached = False
             else:
                 print("Sorry, we have reached the maximum total amount of moves permitted which is 15.\n")
-                #limit_reached = True
+                # limit_reached = True
                 
         
         """
@@ -524,7 +523,7 @@ class BoardClass:
         
     
     """The AI's turn method. Will call the Heuristic + Minimax methods"""
-    def AI_turn(self):
+    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player):
         
         """
         Would need a way to track if AI did a MOVE or PLACE operation.
@@ -534,21 +533,34 @@ class BoardClass:
         
         """
 
+        # this section needs filling up
+
         moveTokenAI = ''
         placeTokenAI = ''
 
-        # generate tree based on last played move,
-        self.generate_tree()
+        # generate tree based on last played move
+        self.generate_tree(current_node, is_max, depth, tree_board, first_run)
+        # generated tree is run through alpha-beta
+        best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, max_player)
 
+        for current_node.children in current_node:
+            if self.calculate_heuristic(current_node.children) == best_heuristic:
+                placeTokenAI = current_node.children.potential_coordinate
 
+        # 1. generate tree
+        # 2. minimax on tree
+        # 3. minimax returns the best heuristic to go for --> find the node that has this heuristic and go for it
+        # can't figure out #3????????
+
+        return placeTokenAI, moveTokenAI
         
     
     def playerChoice(self):
         
-        choice = input("Press 1 to player against another player. Press any to play against the computer: \n")            
+        choice = input("Press 1 to play against another player. Press any key to play against the ai: \n")
         
         if choice is "1":
-            print("Player against player game mode. The first player will be X and the second player will be O \n")
+            print("Player against player chosen. The first player will be X and the second player will be O \n")
             moveToken = 0
             current_turn = 'X'
             placeToken = 0
@@ -559,13 +571,20 @@ class BoardClass:
 
             self.user_turn(moveToken, current_turn, placeToken, placeOrMove, stop_game, losing_on_move, limit_reached)
         else:
-            print("Playing against computer \n")
+            ################################################################################ work here
+            print("Player against ai chosen \n")
+
+            """
+            creating the board that's used for the tree nodes, as well as the root node
+            """
             tree_board = BoardClass()
             tree_board.create_board()
             tree_board = self.board
             root_node = Node(tree_board, None)
-            self.generate_tree(root_node, True, 3, tree_board)
-            value = self.alpha_beta(root_node, 3, float('-inf'), float('inf'), True)
+            self.generate_tree(root_node, True, 3, tree_board, True)
+
+            # value = self.alpha_beta(root_node, 3, float('-inf'), float('inf'), True)
+
             choose_turn = input("Press 1 if you want to play first (X). Press any other key if you want to play second (O): \n")
             if choose_turn == '1':
                 # MAX = User = X, MIN = computer AI = 0
@@ -579,8 +598,7 @@ class BoardClass:
                 stop_game = False
                 losing_on_move = False
                 limit_reached = False
-                
-                
+
                 """
                 Thought of using the sum of moveToken and placeToken parity to check if it's Human or AI turn.
                 THIS CASE: HUMAN GOES 1ST, AI GOES 2ND.
@@ -602,11 +620,9 @@ class BoardClass:
                     else:
                         current_turn = 'O'
 
-                        
-                        #THIS IS TEMPORARY, USED TO TEST THE TOKEN ALTERNATION (X OR O) BETWEEN HUMAN AND AI. REMOVE ONCE THE AI PART IS DONE
-                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
-                        
-                        
+                        self.AI_turn(current_turn)
+
+
                         """
                         WILL NEED TO CALL THE AI HERE.
                         """
@@ -635,14 +651,13 @@ class BoardClass:
                         break
                     
                     print(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI)
-                  
-                
+
             else:
-                
                 """
                 AI WILL START FIRST.
                 HUMAN GOES SECOND
                 """
+                self.AI_turn()
                 
                 # MAX = Computer AI = X, MIN = user = 0
                 print("You are O. Computer AI will be X. Computer AI starts")
@@ -675,16 +690,12 @@ class BoardClass:
                         
                     else:
                         current_turn = 'X'
-                        
-                        
-                        #THIS IS TEMPORARY, USED TO TEST THE TOKEN ALTERNATION (X OR O) BETWEEN HUMAN AND AI. REMOVE ONCE THE AI PART IS DONE
-                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
-                        
-                        
+
                         """
                         WILL NEED TO CALL THE AI_turn HERE.
                         """
-                        
+
+                        self.AI_turn(current_turn)
                     
                     """
                     Below will check the condition of the game if it has ended and who's the winner.
@@ -1225,6 +1236,7 @@ class BoardClass:
     # cases: start of the game, tree is generated root node for max
     #      : tree is generated with max at the top of depth (Max's turn)
     #      : tree is generated with min at the top of depth (Min's turn)
+
 
 run_Game_Main_Function()
 
