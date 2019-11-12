@@ -533,6 +533,14 @@ class BoardClass:
         return the moveTokenAI and placeTokenAI.
         
         """
+
+        moveTokenAI = ''
+        placeTokenAI = ''
+
+        # generate tree based on last played move,
+        self.generate_tree()
+
+
         
     
     def playerChoice(self):
@@ -579,7 +587,7 @@ class BoardClass:
                 If mod 2 = 0 -> Human turn and Human is X, else AI turn (AI is O).
                 Number of total turn stays the same 60. 
                 
-                Will seperate Place and Move counts for Human and for AI.
+                Will separate Place and Move counts for Human and for AI.
                 
                 """
                 
@@ -1181,7 +1189,6 @@ class BoardClass:
                 break (* α cut-off *)
         return value
 
-
     (* Initial call *)
     alphabeta(origin, depth, −∞, +∞, TRUE)
     """
@@ -1215,9 +1222,9 @@ class BoardClass:
                                 self.generate_tree(child_node, not is_max, depth, tree_board, False)
 
     # want to keep tiles for depth of 3 when traversing possibilities
-    # cases: start of the game, all tiles from root node for max
-    #      : tree is generated with max at the top of depth
-    #      : tree is generated with min at the top of depth
+    # cases: start of the game, tree is generated root node for max
+    #      : tree is generated with max at the top of depth (Max's turn)
+    #      : tree is generated with min at the top of depth (Min's turn)
 
 run_Game_Main_Function()
 
