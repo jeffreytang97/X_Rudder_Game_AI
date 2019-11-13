@@ -559,6 +559,22 @@ class BoardClass:
             Increment placeTokenAI
             """
             AI_coordinate_placement = 'E10'
+
+
+            cnode = Node(self.board, 'E5')
+            h = self.calculate_heuristic(cnode)
+            print('h:')
+            print(h)
+
+            poss = self.determine_possibilities_for_one_tile(cnode)
+            print(poss)
+
+            print('best')
+            print(best_heuristic)
+
+
+
+
             for branch_node in current_node.children:
                 # self.calculate_heuristic(branch_node) == best_heuristic
                 # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
@@ -665,8 +681,7 @@ class BoardClass:
                         moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
 
                     else:
-                        tree_board = self.board
-                        current_node = Node(tree_board, 'E10')
+                        current_node = Node(self.board, 'E10')
                         current_turn = 'O'
                         placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                         self.print_board()
@@ -1203,7 +1218,8 @@ class BoardClass:
     # We must check all the possibilities for all the tokens on the board
     # then, we calculate the heuristic value and we will select on which tile to be moved or placed.
     def calculate_heuristic(self, node):
-        max_winning_configs, max_state_density, max_blocked, min_winning_configs, min_state_density, min_blocked = self.determine_possibilities_for_one_tile(node)
+        max_winning_configs, max_state_density, max_blocked, min_winning_configs, min_state_density, min_blocked \
+            = self.determine_possibilities_for_one_tile(node)
 
         # the number of possible winning configurations
         # add functionality to check multiple tiles for radius checking in future - maybe with for loop
@@ -1275,7 +1291,7 @@ class BoardClass:
     def generate_tree(self, current_node, is_max, depth, tree_board, first_run):
         for potential_tile in tree_board:
             if potential_tile is not current_node.potential_coordinate:
-                if potential_tile == "_":
+                if tree_board[potential_tile] == "_":
                     # once a depth of 3 is reached for potential nodes, reset the tree_board and depth
                     # for other branches
                     while depth > 0:
