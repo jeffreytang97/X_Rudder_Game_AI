@@ -537,10 +537,10 @@ class BoardClass:
         
         """
 
-        # this section needs filling up
-
-        moveTokenAI = ''
-        placeTokenAI = ''
+        if is_max is True:
+            token = 'X'
+        else:
+            token = 'O'
 
         # generate tree based on last played move
         self.generate_tree(current_node, is_max, depth, tree_board, first_run)
@@ -548,15 +548,24 @@ class BoardClass:
         best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, max_player)
 
         """
-        If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to move.        
+        If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to start moving tokens.        
         """
-        if(placeTokenAI <= 15):
+        if placeTokenAI <= 15:
             """
             Tree generation, heuristic, find the optimal coordinate.
             Save the coordinate in List.
             Place the coordinate.
             Increment placeTokenAI
             """
+            AI_coordinate_placement = ''
+            for branch_node in current_node.children:
+                # alternatively, if best_heuristic - 0.1 <= elf.calculate_heuristic(branch_node) <= best_heuristic + 0.1
+                if self.calculate_heuristic(branch_node) == best_heuristic:
+                    AI_coordinate_placement = branch_node.potential_coordinate
+
+            placeTokenAI += 1
+            self.addCoordinate(AI_coordinate_placement, token)
+
         else:
             """
             Tree generation, heuristic, find the optimal coordinate.
@@ -580,9 +589,7 @@ class BoardClass:
                         """Move the token in old coor to the Optimal coor."""
 
 
-        for current_node.children in current_node:
-            if self.calculate_heuristic(current_node.children) == best_heuristic:
-                placeTokenAI = current_node.children.potential_coordinate
+
 
         # 1. generate tree
         # 2. minimax on tree
