@@ -576,6 +576,12 @@ class BoardClass:
             Move coordinate saved in variable to the optimal coordinate.
             Increment moveTokenAI
             """
+            
+            AI_coordinate_place = ''
+            for branch_node in current_node.children:
+                if(self.calculate_heuristic(branch_node) == best_heuristic):
+                    AI_coordinate_place = branch_node.potential_coordinate
+            
             dict = self.board
             for coordinate in self.coordinateListAI:
                 letter, number = self.seperate_coordinate_values(coordinate)
@@ -586,11 +592,11 @@ class BoardClass:
                 if(right_coor in dict):
                     if(dict.get(right_coor) == current_turn or dict.get(left_coor) == current_turn):
                         old_coor = coordinate
-                        self.coordinateListAI[coordinate] = 0 #UPDATE TO THE NEW OPTIMAL COORDINATE. MAKE CHANGE
+                        self.coordinateListAI[coordinate] = AI_coordinate_place #UPDATE TO THE NEW OPTIMAL COORDINATE. 
                         """Move the token in old coor to the Optimal coor."""
-
-
-
+                        dict.get(old_coor) = "_"
+                        dict.get(AI_coordinate_place) = current_turn
+                        moveTokenAI += 1
 
         # 1. generate tree
         # 2. minimax on tree
