@@ -527,7 +527,7 @@ class BoardClass:
     coordinateListAI = []
     
     """The AI's turn method. Will call the Heuristic + Minimax methods"""
-    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player, moveTokenAI, placeTokenAI):
+    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player, moveTokenAI, placeTokenAI, current_turn):
         
         """
         Would need a way to track if AI did a MOVE or PLACE operation.
@@ -566,7 +566,18 @@ class BoardClass:
             Move coordinate saved in variable to the optimal coordinate.
             Increment moveTokenAI
             """
-            
+            dict = self.board
+            for coordinate in self.coordinateListAI:
+                letter, number = self.seperate_coordinate_values(coordinate)
+                two_tiles_left = chr(ord(letter) - 2)
+                two_tiles_right = chr(ord(letter) + 2)
+                left_coor = two_tiles_left + str(number)
+                right_coor = two_tiles_right + str(number)
+                if(right_coor in dict):
+                    if(dict.get(right_coor) == current_turn or dict.get(left_coor) == current_turn):
+                        old_coor = coordinate
+                        self.coordinateListAI[coordinate] = 0 #UPDATE TO THE NEW OPTIMAL COORDINATE. MAKE CHANGE
+                        """Move the token in old coor to the Optimal coor."""
 
 
         for current_node.children in current_node:
