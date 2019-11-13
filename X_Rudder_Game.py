@@ -598,6 +598,7 @@ class BoardClass:
                         dict[dict.get(old_coor)] = "_"
                         dict[dict.get(AI_coordinate_place)] = current_turn
                         moveTokenAI += 1
+                        break
 
         # 1. generate tree
         # 2. minimax on tree
@@ -666,7 +667,7 @@ class BoardClass:
                         tree_board = self.board
                         current_node = Node(tree_board, None)
                         current_turn = 'O'
-                        self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                        placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                         self.print_board()
 
                         """
@@ -745,11 +746,11 @@ class BoardClass:
                         current_node = Node(tree_board, 'E10')
 
                         if first_run_AI is True:
-                            self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                             self.print_board()
                             first_run_AI = False
                         else:
-                            self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                             self.print_board()
 
                     """
