@@ -521,9 +521,13 @@ class BoardClass:
         """
         return moveTokenHuman, placeTokenHuman, stop_game, losing_on_move
         
+    """
+    LIST THAT WILL CONTAIN COORDINATES OF TOKEN PLACED BY THE AI
+    """
+    coordinateListAI = []
     
     """The AI's turn method. Will call the Heuristic + Minimax methods"""
-    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player):
+    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player, moveTokenAI, placeTokenAI):
         
         """
         Would need a way to track if AI did a MOVE or PLACE operation.
@@ -543,6 +547,28 @@ class BoardClass:
         # generated tree is run through alpha-beta
         best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, max_player)
 
+        """
+        If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to move.        
+        """
+        if(placeTokenAI <= 15):
+            """
+            Tree generation, heuristic, find the optimal coordinate.
+            Save the coordinate in List.
+            Place the coordinate.
+            Increment placeTokenAI
+            """
+        else:
+            """
+            Tree generation, heuristic, find the optimal coordinate.
+            Go through the List, check 2 tiles left, 2 tiles right. See if there are same token on those. If at least 1, go to next element in List.
+            Finds the coordinate where it does not have any same type of token in 2 tiles left and 2 tiles right. Save that coordinate in variable.
+            Update new coordinate (optimal coordinate) at that index in List.
+            Move coordinate saved in variable to the optimal coordinate.
+            Increment moveTokenAI
+            """
+            
+
+
         for current_node.children in current_node:
             if self.calculate_heuristic(current_node.children) == best_heuristic:
                 placeTokenAI = current_node.children.potential_coordinate
@@ -551,6 +577,7 @@ class BoardClass:
         # 2. minimax on tree
         # 3. minimax returns the best heuristic to go for --> find the node that has this heuristic and go for it
         # can't figure out #3????????
+        
 
         return placeTokenAI, moveTokenAI
         
