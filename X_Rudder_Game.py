@@ -557,13 +557,15 @@ class BoardClass:
             Place the coordinate.
             Increment placeTokenAI
             """
-            AI_coordinate_placement = ''
+            AI_coordinate_placement = 'E10'
             for branch_node in current_node.children:
-                # alternatively, if best_heuristic - 0.1 <= elf.calculate_heuristic(branch_node) <= best_heuristic + 0.1
-                if self.calculate_heuristic(branch_node) == best_heuristic:
+                # self.calculate_heuristic(branch_node) == best_heuristic
+                # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
+                if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1:
                     AI_coordinate_placement = branch_node.potential_coordinate
 
             placeTokenAI += 1
+            print('HERE' + AI_coordinate_placement)
             stop_game = self.addCoordinate(AI_coordinate_placement, token)
 
         else:
@@ -878,7 +880,7 @@ class BoardClass:
 
         self.board[coordinate] = token
         place_token_flag = True
-        # Everythime a token is added on the board, need to check if a player won.
+        # Every time a token is added on the board, need to check if a player won.
         stop_game = self.check_winning_condition(coordinate, token, place_token_flag)
         return stop_game
     
