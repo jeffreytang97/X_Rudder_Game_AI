@@ -545,6 +545,11 @@ class BoardClass:
         """
         If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to start moving tokens.        
         """
+        # generate tree based on last played move
+        self.generate_tree(current_node, is_max, depth, tree_board, first_run)
+        # generated tree is run through alpha-beta
+        best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, is_max)
+
         if placeTokenAI <= 15:
             """
             Tree generation, heuristic, find the optimal coordinate.
@@ -552,12 +557,6 @@ class BoardClass:
             Place the coordinate.
             Increment placeTokenAI
             """
-
-            # generate tree based on last played move
-            self.generate_tree(current_node, is_max, depth, tree_board, first_run)
-            # generated tree is run through alpha-beta
-            best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, is_max)
-
             AI_coordinate_placement = ''
             for branch_node in current_node.children:
                 # alternatively, if best_heuristic - 0.1 <= elf.calculate_heuristic(branch_node) <= best_heuristic + 0.1
