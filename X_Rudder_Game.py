@@ -1269,7 +1269,7 @@ class BoardClass:
     def generate_tree(self, current_node, is_max, depth, tree_board, first_run):
         for potential_tile in tree_board:
             if potential_tile is not current_node.potential_coordinate:
-                if potential_tile.value == "_":
+                if potential_tile == "_":
                     # once a depth of 3 is reached for potential nodes, reset the tree_board and depth
                     # for other branches
                     if depth == 0 and first_run is True:
