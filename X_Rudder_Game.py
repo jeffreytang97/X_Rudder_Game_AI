@@ -546,6 +546,7 @@ class BoardClass:
         If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to start moving tokens.        
         """
         # generate tree based on last played move
+        tree_board = self.board
         self.generate_tree(current_node, is_max, depth, tree_board, first_run)
         # generated tree is run through alpha-beta
         best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, is_max)
@@ -664,7 +665,7 @@ class BoardClass:
 
                     else:
                         tree_board = self.board
-                        current_node = Node(tree_board, None)
+                        current_node = Node(tree_board, 'E10')
                         current_turn = 'O'
                         self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                         self.print_board()
