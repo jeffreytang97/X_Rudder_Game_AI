@@ -1288,63 +1288,102 @@ class BoardClass:
     # this board is used to help generate the tree that will be used by alpha-beta
     # this function currently only generates trees for placing tokens... NOT moving tokens
     def generate_tree(self, current_node, is_max, depth, tree_board, first_run):
+
+        # create a closed list of all nodes that have already been visited
+        closed_list = []
+        j = 0
+        k = 0
+
         for potential_tile in tree_board:
+            j = 0
             if potential_tile is not current_node.potential_coordinate:
                 if is_max is True:
                     if tree_board[potential_tile] == "_":
-                        #tree_board[potential_tile] = 'X'
+                        tree_board[potential_tile] = 'X'
                         child_node = Node(tree_board, potential_tile)
                         current_node.add_child(child_node)
-                        tree_board1 = tree_board
+                        tree_board[potential_tile] = '_'                                # reset the board to the present state
+                        closed_list.append(potential_tile)
 
-                        for pot_tile in tree_board1:
+                        for pot_tile in child_node.potential_board:
                             if pot_tile is not current_node.potential_coordinate:
-                                if tree_board1[pot_tile] == "_":
-                                    #tree_board1[pot_tile] = 'O'
-                                    child_node1 = Node(tree_board1, pot_tile)
-                                    child_node.add_child(child_node1)
-                                    tree_board2 = tree_board1
+                                if pot_tile in closed_list:
+                                    # already visited
+                                    pass
+                                else:
+                                    if tree_board[pot_tile] == "_":
+                                        tree_board[pot_tile] = 'O'
+                                        child_node1 = Node(tree_board, pot_tile)
+                                        child_node.add_child(child_node1)
+                                        tree_board[pot_tile] = '_'
+                                        closed_list.append(pot_tile)
 
-                                    for po_tile in tree_board2:
-                                        if po_tile is not current_node.potential_coordinate:
-                                            if tree_board2[po_tile] == "_":
-                                                #tree_board2[po_tile] = 'X'
-                                                child_node2 = Node(tree_board2, po_tile)
-                                                child_node1.add_child(child_node2)
-
-                                                tree_board2 = tree_board1
-
-                                    #tree_board1 = tree_board
-
-                        tree_board = self.board
+                                        for po_tile in child_node1.potential_board:
+                                            if po_tile is not current_node.potential_coordinate:
+                                                if po_tile in closed_list:
+                                                    # already visited
+                                                    pass
+                                                else:
+                                                    if tree_board[po_tile] == "_":
+                                                        tree_board[po_tile] = 'X'
+                                                        child_node2 = Node(tree_board, po_tile)
+                                                        child_node1.add_child(child_node2)
+                                                        tree_board[po_tile] = '_'
+                                                        closed_list.append(po_tile)
+                                            if (k == size_of_dict1 - 1):
+                                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                                closed_list = []
+                                            k += 1
+                            if (j == size_of_dict - 1):
+                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                closed_list = []
+                            j += 1
 
                 elif is_max is False:
                     if tree_board[potential_tile] == "_":
-                        #tree_board[potential_tile] = 'O'
+                        tree_board[potential_tile] = 'O'
                         child_node = Node(tree_board, potential_tile)
                         current_node.add_child(child_node)
-                        tree_board1 = tree_board
+                        tree_board[potential_tile] = '_'
+                        closed_list.append(potential_tile)
 
-                        for pot_tile in tree_board1:
+                        for pot_tile in child_node.potential_board:
+                            k = 0
+                            size_of_dict = len(child_node.potential_board)
                             if pot_tile is not current_node.potential_coordinate:
-                                if tree_board1[pot_tile] == "_":
-                                    #tree_board1[pot_tile] = 'X'
-                                    child_node1 = Node(tree_board1, pot_tile)
-                                    child_node.add_child(child_node1)
-                                    tree_board2 = tree_board1
+                                if pot_tile in closed_list:
+                                    # already visited
+                                    pass
+                                else:
+                                    if tree_board[pot_tile] == "_":
+                                        tree_board[pot_tile] = 'X'
+                                        child_node1 = Node(tree_board, pot_tile)
+                                        child_node.add_child(child_node1)
+                                        tree_board[pot_tile] = '_'
+                                        closed_list.append(pot_tile)
 
-                                    for po_tile in tree_board2:
-                                        if po_tile is not current_node.potential_coordinate:
-                                            if tree_board2[po_tile] == "_":
-                                                #tree_board2[po_tile] = 'O'
-                                                child_node2 = Node(tree_board2, po_tile)
-                                                child_node1.add_child(child_node2)
+                                        for po_tile in child_node1.potential_board:
+                                            size_of_dict1 = len(child_node1.potential_board)
+                                            if po_tile is not current_node.potential_coordinate:
+                                                if po_tile in closed_list:
+                                                    # already visited
+                                                    pass
+                                                else:
+                                                    if tree_board[po_tile] == "_":
+                                                        tree_board[po_tile] = 'O'
+                                                        child_node2 = Node(tree_board, po_tile)
+                                                        child_node1.add_child(child_node2)
+                                                        tree_board[po_tile] = '_'
+                                                        closed_list.append(po_tile)
+                                            if (k == size_of_dict1 - 1):
+                                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                                closed_list = []
+                                            k += 1
+                            if (j == size_of_dict - 1):
+                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                closed_list = []
+                            j += 1
 
-                                                tree_board2 = tree_board1
-
-                                    tree_board1 = tree_board
-
-                        tree_board = self.board
         return current_node
 
 
