@@ -527,7 +527,7 @@ class BoardClass:
     coordinateListAI = []
     
     """The AI's turn method. Will call the Heuristic + Minimax methods"""
-    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, max_player, moveTokenAI, placeTokenAI, current_turn):
+    def AI_turn(self, current_node, is_max, depth, tree_board, first_run, alpha, beta, moveTokenAI, placeTokenAI, current_turn):
         
         """
         Would need a way to track if AI did a MOVE or PLACE operation.
@@ -536,16 +536,11 @@ class BoardClass:
         return the moveTokenAI and placeTokenAI.
         
         """
-
         if is_max is True:
             token = 'X'
         else:
             token = 'O'
-
-        # generate tree based on last played move
-        self.generate_tree(current_node, is_max, depth, tree_board, first_run)
-        # generated tree is run through alpha-beta
-        best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, max_player)
+        stop_game = False
 
         """
         If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to start moving tokens.        
@@ -557,6 +552,12 @@ class BoardClass:
             Place the coordinate.
             Increment placeTokenAI
             """
+
+            # generate tree based on last played move
+            self.generate_tree(current_node, is_max, depth, tree_board, first_run)
+            # generated tree is run through alpha-beta
+            best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, is_max)
+
             AI_coordinate_placement = ''
             for branch_node in current_node.children:
                 # alternatively, if best_heuristic - 0.1 <= elf.calculate_heuristic(branch_node) <= best_heuristic + 0.1
@@ -564,7 +565,7 @@ class BoardClass:
                     AI_coordinate_placement = branch_node.potential_coordinate
 
             placeTokenAI += 1
-            self.addCoordinate(AI_coordinate_placement, token)
+            stop_game = self.addCoordinate(AI_coordinate_placement, token)
 
         else:
             """
@@ -597,7 +598,7 @@ class BoardClass:
         # can't figure out #3????????
         
 
-        return placeTokenAI, moveTokenAI
+        return placeTokenAI, moveTokenAI, stop_game
         
     
     def playerChoice(self):
@@ -616,19 +617,7 @@ class BoardClass:
 
             self.user_turn(moveToken, current_turn, placeToken, placeOrMove, stop_game, losing_on_move, limit_reached)
         else:
-            ################################################################################ work here
             print("Player against ai chosen \n")
-
-            """
-            creating the board that's used for the tree nodes, as well as the root node
-            """
-            tree_board = BoardClass()
-            tree_board.create_board()
-            tree_board = self.board
-            root_node = Node(tree_board, None)
-            self.generate_tree(root_node, True, 3, tree_board, True)
-
-            # value = self.alpha_beta(root_node, 3, float('-inf'), float('inf'), True)
 
             choose_turn = input("Press 1 if you want to play first (X). Press any other key if you want to play second (O): \n")
             if choose_turn == '1':
@@ -653,6 +642,10 @@ class BoardClass:
                 Will separate Place and Move counts for Human and for AI.
                 
                 """
+
+                # initialize tree_board
+                tree_board = BoardClass()
+                tree_board.create_board()
                 
                 while(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI < 60):
                     """
@@ -663,10 +656,10 @@ class BoardClass:
                         moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
                         
                     else:
+                        tree_board = self.board
+                        current_node = Node(tree_board, None)
                         current_turn = 'O'
-
-                        self.AI_turn(current_turn)
-
+                        self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
 
                         """
                         WILL NEED TO CALL THE AI HERE.
@@ -702,8 +695,12 @@ class BoardClass:
                 AI WILL START FIRST.
                 HUMAN GOES SECOND
                 """
-                self.AI_turn()
-                
+                # initialize tree_board
+                tree_board = BoardClass()
+                tree_board.create_board()
+                tree_board = self.board
+                root_node = Node(tree_board, None)
+
                 # MAX = Computer AI = X, MIN = user = 0
                 print("You are O. Computer AI will be X. Computer AI starts")
                 
@@ -716,6 +713,7 @@ class BoardClass:
                 stop_game = False
                 losing_on_move = False
                 limit_reached = False
+                first_run_AI = True
                 
                 
                 """
@@ -735,19 +733,28 @@ class BoardClass:
                         
                     else:
                         current_turn = 'X'
+                        tree_board = self.board
+                        current_node = Node(tree_board, None)
 
-                        """
+                        if first_run_AI is True:
+                            self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            first_run_AI = False
+                        else:
+                            self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+
+
+                    """
                         WILL NEED TO CALL THE AI_turn HERE.
                         """
 
-                        self.AI_turn(current_turn)
-                    
+
+
                     """
                     Below will check the condition of the game if it has ended and who's the winner.
                     Takes in the returned values from the method "Human_turn" and verify with the conditions below.
                     CHECKING THE CONDITION WILL NOT BE DONE INSIDE THE "Human_turn" METHOD. 
                     """                   
-                    # Check if game has endeds    
+                    # Check if game has ended
                     if stop_game == True:
                         print('Game Over! Player ' + current_turn + ' has won the game!!!')
                         break
