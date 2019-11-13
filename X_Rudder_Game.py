@@ -737,6 +737,7 @@ class BoardClass:
                 losing_on_move = False
                 limit_reached = False
                 first_run_AI = True
+                coordinate = ''
                 
                 
                 """
@@ -766,11 +767,6 @@ class BoardClass:
                         else:
                             placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                             self.print_board()
-
-                    """
-                        WILL NEED TO CALL THE AI_turn HERE.
-                        """
-
 
 
                     """
@@ -1292,28 +1288,67 @@ class BoardClass:
         closed_list = []
         j = 0
         k = 0
-        coordinate = current_node.potential_coordinate
-        column, row = self.seperate_coordinate_values(coordinate)
-        # To get column C if we added a token in column A for example
-        two_on_the_right_column = chr(ord(column) + 2)
-        # To get move 2 column to the left
-        two_on_the_left_column = chr(ord(column) - 2)
-        # To get middle column of the formed X on left
-        X_one_column_left = chr(ord(column) - 1)
-        # To get the middle column of the formed X on right
-        X_one_column_right = chr(ord(column) + 1)
-        # to get the coordinates of two rows above
-        two_row_up = int(row) + 2
-        # to get the coordinates of two rows below
-        two_row_down = int(row) - 2
-        # To get the center tile of the possible X formed above
-        X_one_row_up = int(row) + 1
-        # to get the center tile of the possible X formed below
-        X_one_row_down = int(row) - 1
+        surrounding_coord_list = []
 
         for potential_tile in tree_board:
             j = 0
-            if ((str(X_one_row_down) or str(X_one_row_up) or str(two_row_down) or str(two_row_up) or X_one_column_right or X_one_column_left or two_on_the_left_column or two_on_the_right_column) in potential_tile):
+            if first_run == False:
+                coordinate = current_node.potential_coordinate
+                column, row = self.seperate_coordinate_values(coordinate)
+                # To get column C if we added a token in column A for example
+                two_on_the_right_column = chr(ord(column) + 2)
+                # To get move 2 column to the left
+                two_on_the_left_column = chr(ord(column) - 2)
+                # To get middle column of the formed X on left
+                X_one_column_left = chr(ord(column) - 1)
+                # To get the middle column of the formed X on right
+                X_one_column_right = chr(ord(column) + 1)
+                # to get the coordinates of two rows above
+                two_row_up = int(row) + 2
+                # to get the coordinates of two rows below
+                two_row_down = int(row) - 2
+                # To get the center tile of the possible X formed above
+                X_one_row_up = int(row) + 1
+                # to get the center tile of the possible X formed below
+                X_one_row_down = int(row) - 1
+
+                """This is all the set of coordinates around the root node coordinate to be checked to add a tile"""
+                coord1 = (two_on_the_left_column) + str(two_row_down)
+                coord2 = (two_on_the_left_column) + str(X_one_row_down)
+                coord3 = (two_on_the_left_column) + row
+                coord4 = (two_on_the_left_column) + str(X_one_row_up)
+                coord5 = (two_on_the_left_column) + str(two_row_up)
+
+                coord6 = (X_one_column_left) + str(two_row_down)
+                coord7 = (X_one_column_left) + str(X_one_row_down)
+                coord8 = (X_one_column_left) + row
+                coord9 = (X_one_column_left) + str(X_one_row_up)
+                coord10 = (X_one_column_left) + str(two_row_up)
+
+                coord11 = column + str(two_row_down)
+                coord12 = column + str(X_one_row_down)
+                coord13 = column + str(X_one_row_up)
+                coord14 = column + str(two_row_up)
+
+                coord15 = (X_one_column_right) + str(two_row_down)
+                coord16 = (X_one_column_right) + str(X_one_row_down)
+                coord17 = (X_one_column_right) + row
+                coord18 = (X_one_column_right) + str(X_one_row_up)
+                coord19 = (X_one_column_right) + str(two_row_up)
+
+                coord20 = (two_on_the_right_column) + str(two_row_down)
+                coord21 = (two_on_the_right_column) + str(X_one_row_down)
+                coord22 = (two_on_the_right_column) + row
+                coord23 = (two_on_the_right_column) + str(X_one_row_up)
+                coord24 = (two_on_the_right_column) + str(two_row_up)
+
+                # add all the surroundings coordinates inside a list.
+                surrounding_coord_list = [coord1, coord2, coord3, coord4, coord5, coord6, coord7, coord8, coord9,
+                                          coord10, coord11, coord12, coord13, coord14, coord15, coord16, coord17,
+                                          coord18, coord19, coord20, coord21, coord22, coord23, coord24]
+
+            # only add tiles in the tree that are from the surrounding of the previous player tile choice
+            if (potential_tile in surrounding_coord_list) or first_run == True:
                 if potential_tile is not current_node.potential_coordinate:
                     if is_max is True:
                         if tree_board[potential_tile] == "_":
@@ -1324,6 +1359,7 @@ class BoardClass:
                             closed_list.append(potential_tile)
 
                             for pot_tile in child_node.potential_board:
+                                size_of_dict = len(child_node.potential_board)
                                 if pot_tile is not current_node.potential_coordinate:
                                     if pot_tile in closed_list:
                                         # already visited
@@ -1337,6 +1373,7 @@ class BoardClass:
                                             closed_list.append(pot_tile)
 
                                             for po_tile in child_node1.potential_board:
+                                                size_of_dict1 = len(child_node1.potential_board)
                                                 if po_tile is not current_node.potential_coordinate:
                                                     if po_tile in closed_list:
                                                         # already visited
