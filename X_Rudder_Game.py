@@ -731,7 +731,7 @@ class BoardClass:
                 
                 while(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI < 60):
                     """
-                    Once the game starts, the human will be X
+                    Once the game starts, the human will be O
                     """
                     if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 != 0):
                         current_turn = 'O'
@@ -743,11 +743,11 @@ class BoardClass:
                         current_node = Node(tree_board, 'E10')
 
                         if first_run_AI is True:
-                            self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                             self.print_board()
                             first_run_AI = False
                         else:
-                            self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                             self.print_board()
 
                     """
