@@ -21,7 +21,7 @@ from GameTree import Node
 
 # Just an example
 def initiate_game():
-    print("Welcome to X-Rudder game! AHHHHH")
+    print("Welcome to X-Rudder game!")
 
 def run_Game_Main_Function():
     # This function will contain all the other functions that needs to be run.
@@ -34,7 +34,7 @@ def run_Game_Main_Function():
 
 class BoardClass:
     def __init__(self):
-        print("Here is the board")
+        print("!")
     
         # function to print/reset(?) the board
     def create_board(self):
@@ -561,16 +561,16 @@ class BoardClass:
             AI_coordinate_placement = 'E10'
 
 
-            cnode = Node(self.board, 'E5')
-            h = self.calculate_heuristic(cnode)
-            print('h:')
-            print(h)
-
-            poss = self.determine_possibilities_for_one_tile(cnode)
-            print(poss)
-
-            print('best')
-            print(best_heuristic)
+            # cnode = Node(self.board, 'E5')
+            # h = self.calculate_heuristic(cnode)
+            # print('h:')
+            # print(h)
+            #
+            # poss = self.determine_possibilities_for_one_tile(cnode)
+            # print(poss)
+            #
+            # print('best')
+            # print(best_heuristic)
 
 
 
@@ -578,11 +578,11 @@ class BoardClass:
             for branch_node in current_node.children:
                 # self.calculate_heuristic(branch_node) == best_heuristic
                 # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
-                if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1:
+                if best_heuristic - 1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 1:
                     AI_coordinate_placement = branch_node.potential_coordinate
 
             placeTokenAI += 1
-            print('HERE' + AI_coordinate_placement)
+            # print('HERE' + AI_coordinate_placement)
             stop_game = self.addCoordinate(AI_coordinate_placement, token)
 
         else:
@@ -642,7 +642,7 @@ class BoardClass:
 
             self.user_turn(moveToken, current_turn, placeToken, placeOrMove, stop_game, losing_on_move, limit_reached)
         else:
-            print("Player against ai chosen \n")
+            print("Player against AI chosen \n")
 
             choose_turn = input("Press 1 if you want to play first (X). Press any other key if you want to play second (O): \n")
             if choose_turn == '1':
@@ -1291,26 +1291,62 @@ class BoardClass:
     def generate_tree(self, current_node, is_max, depth, tree_board, first_run):
         for potential_tile in tree_board:
             if potential_tile is not current_node.potential_coordinate:
-                if tree_board[potential_tile] == "_":
-                    # once a depth of 3 is reached for potential nodes, reset the tree_board and depth
-                    # for other branches
-                    while depth > 0:
-                        if is_max is True:
-                            tree_board[potential_tile] = 'X'
-                            child_node = Node(tree_board, potential_tile)
-                            current_node.add_child(child_node)
-                            depth -= 1
-                            self.generate_tree(child_node, not is_max, depth, tree_board, False)
-                        elif is_max is False:
-                            tree_board[potential_tile] = 'O'
-                            child_node = Node(tree_board, potential_tile)
-                            current_node.add_child(child_node)
-                            depth -= 1
-                            self.generate_tree(child_node, not is_max, depth, tree_board, False)
-                            
-                    if depth == 0:
+                if is_max is True:
+                    if tree_board[potential_tile] == "_":
+                        tree_board[potential_tile] = 'X'
+                        child_node = Node(tree_board, potential_tile)
+                        current_node.add_child(child_node)
+                        tree_board1 = tree_board
+
+                        for pot_tile in tree_board1:
+                            if pot_tile is not current_node.potential_coordinate:
+                                if tree_board1[pot_tile] == "_":
+                                    tree_board1[pot_tile] = 'O'
+                                    child_node1 = Node(tree_board1, pot_tile)
+                                    child_node.add_child(child_node1)
+                                    tree_board2 = tree_board1
+
+                                    for po_tile in tree_board2:
+                                        if po_tile is not current_node.potential_coordinate:
+                                            if tree_board2[po_tile] == "_":
+                                                tree_board2[po_tile] = 'X'
+                                                child_node2 = Node(tree_board2, po_tile)
+                                                child_node1.add_child(child_node2)
+
+                                                tree_board2 = tree_board1
+
+                                    tree_board1 = tree_board
+
                         tree_board = self.board
-                        depth = 3
+
+                elif is_max is False:
+                    if tree_board[potential_tile] == "_":
+                        tree_board[potential_tile] = 'O'
+                        child_node = Node(tree_board, potential_tile)
+                        current_node.add_child(child_node)
+                        tree_board1 = tree_board
+
+                        for pot_tile in tree_board1:
+                            if pot_tile is not current_node.potential_coordinate:
+                                if tree_board1[pot_tile] == "_":
+                                    tree_board1[pot_tile] = 'X'
+                                    child_node1 = Node(tree_board1, pot_tile)
+                                    child_node.add_child(child_node1)
+                                    tree_board2 = tree_board1
+
+                                    for po_tile in tree_board2:
+                                        if po_tile is not current_node.potential_coordinate:
+                                            if tree_board2[po_tile] == "_":
+                                                tree_board2[po_tile] = 'O'
+                                                child_node2 = Node(tree_board2, po_tile)
+                                                child_node1.add_child(child_node2)
+
+                                                tree_board2 = tree_board1
+
+                                    tree_board1 = tree_board
+
+                        tree_board = self.board
+
 
     # want to keep tiles for depth of 3 when traversing possibilities
     # cases: start of the game, tree is generated root node for max
@@ -1320,8 +1356,27 @@ class BoardClass:
 
 run_Game_Main_Function()
 
+# original generate_tree function
 
-
+# once a depth of 3 is reached for potential nodes, reset the tree_board and depth
+# for other branches
+# while depth > 0:
+#     if is_max is True:
+#         tree_board[potential_tile] = 'X'
+#         child_node = Node(tree_board, potential_tile)
+#         current_node.add_child(child_node)
+#         depth -= 1
+#         self.generate_tree(child_node, not is_max, depth, tree_board, False)
+#     elif is_max is False:
+#         tree_board[potential_tile] = 'O'
+#         child_node = Node(tree_board, potential_tile)
+#         current_node.add_child(child_node)
+#         depth -= 1
+#         self.generate_tree(child_node, not is_max, depth, tree_board, False)
+#
+# if depth == 0:
+#     tree_board = self.board
+#     depth = 3
 
 
 
