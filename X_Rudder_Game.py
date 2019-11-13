@@ -659,12 +659,13 @@ class BoardClass:
                     if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 == 0):
                         current_turn = 'X'
                         moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
-                        
+
                     else:
                         tree_board = self.board
                         current_node = Node(tree_board, None)
                         current_turn = 'O'
                         self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                        self.print_board()
 
                         """
                         WILL NEED TO CALL THE AI HERE.
@@ -735,18 +736,19 @@ class BoardClass:
                     if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 != 0):
                         current_turn = 'O'
                         moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
-                        
+
                     else:
                         current_turn = 'X'
                         tree_board = self.board
-                        current_node = Node(tree_board, None)
+                        current_node = Node(tree_board, 'E10')
 
                         if first_run_AI is True:
                             self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
+                            self.print_board()
                             first_run_AI = False
                         else:
                             self.AI_turn(current_node, False, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
-
+                            self.print_board()
 
                     """
                         WILL NEED TO CALL THE AI_turn HERE.
