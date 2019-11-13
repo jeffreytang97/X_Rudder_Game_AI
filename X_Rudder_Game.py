@@ -593,8 +593,8 @@ class BoardClass:
                         old_coor = coordinate
                         self.coordinateListAI[coordinate] = AI_coordinate_place #UPDATE TO THE NEW OPTIMAL COORDINATE. 
                         """Move the token in old coor to the Optimal coor."""
-                        dict.get(old_coor) = "_"
-                        dict.get(AI_coordinate_place) = current_turn
+                        dict[dict.get(old_coor)] = "_"
+                        dict[dict.get(AI_coordinate_place)] = current_turn
                         moveTokenAI += 1
 
         # 1. generate tree
