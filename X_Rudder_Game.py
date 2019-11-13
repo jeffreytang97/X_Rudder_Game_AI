@@ -1278,22 +1278,23 @@ class BoardClass:
                 if potential_tile == "_":
                     # once a depth of 3 is reached for potential nodes, reset the tree_board and depth
                     # for other branches
-                    if depth == 0 and first_run is True:
+                    while depth > 0:
+                        if is_max is True:
+                            tree_board[potential_tile] = 'X'
+                            child_node = Node(tree_board, potential_tile)
+                            current_node.add_child(child_node)
+                            depth -= 1
+                            self.generate_tree(child_node, not is_max, depth, tree_board, False)
+                        elif is_max is False:
+                            tree_board[potential_tile] = 'O'
+                            child_node = Node(tree_board, potential_tile)
+                            current_node.add_child(child_node)
+                            depth -= 1
+                            self.generate_tree(child_node, not is_max, depth, tree_board, False)
+                            
+                    if depth == 0:
                         tree_board = self.board
                         depth = 3
-                        while depth > 0:
-                            if is_max is True:
-                                tree_board[potential_tile] = 'X'
-                                child_node = Node(tree_board, potential_tile)
-                                current_node.add_child(child_node)
-                                depth -= 1
-                                self.generate_tree(child_node, not is_max, depth, tree_board, False)
-                            elif is_max is False:
-                                tree_board[potential_tile] = 'O'
-                                child_node = Node(tree_board, potential_tile)
-                                current_node.add_child(child_node)
-                                depth -= 1
-                                self.generate_tree(child_node, not is_max, depth, tree_board, False)
 
     # want to keep tiles for depth of 3 when traversing possibilities
     # cases: start of the game, tree is generated root node for max
