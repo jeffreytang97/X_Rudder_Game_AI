@@ -519,7 +519,7 @@ class BoardClass:
         """
         Return values to check the Winning conditions.
         """
-        return moveTokenHuman, placeTokenHuman, stop_game, losing_on_move
+        return moveTokenHuman, placeTokenHuman, stop_game, losing_on_move, coordinate
         
     """
     LIST THAT WILL CONTAIN COORDINATES OF TOKEN PLACED BY THE AI
@@ -546,8 +546,8 @@ class BoardClass:
         If the place token has reached 15, the AI cannot place anymore tokens, so it'd have to start moving tokens.        
         """
         # generate tree based on last played move
-        tree_board = self.board
-        self.generate_tree(current_node, is_max, depth, tree_board, first_run)
+        # tree_board = self.board
+        current_node = self.generate_tree(current_node, is_max, depth, tree_board, first_run)
         # generated tree is run through alpha-beta
         best_heuristic = self.alpha_beta(current_node, depth, alpha, beta, is_max)
 
@@ -572,14 +572,12 @@ class BoardClass:
             # print('best')
             # print(best_heuristic)
 
-
-
-
             for branch_node in current_node.children:
                 # self.calculate_heuristic(branch_node) == best_heuristic
                 # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
                 if best_heuristic - 1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 1:
                     AI_coordinate_placement = branch_node.potential_coordinate
+                    break
 
             placeTokenAI += 1
             # print('HERE' + AI_coordinate_placement)
@@ -671,6 +669,8 @@ class BoardClass:
                 # initialize tree_board
                 tree_board = BoardClass()
                 tree_board.create_board()
+                tree_board = self.board
+                root_node = Node(tree_board, None)
                 
                 while(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI < 60):
                     """
@@ -678,10 +678,10 @@ class BoardClass:
                     """
                     if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 == 0):
                         current_turn = 'X'
-                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
+                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move, coordinate = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
 
                     else:
-                        current_node = Node(self.board, 'E10')
+                        current_node = Node(self.board, coordinate)
                         current_turn = 'O'
                         placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, False, 3, tree_board, False, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
                         self.print_board()
@@ -723,7 +723,6 @@ class BoardClass:
                 # initialize tree_board
                 tree_board = BoardClass()
                 tree_board.create_board()
-                tree_board = self.board
                 root_node = Node(tree_board, None)
 
                 # MAX = Computer AI = X, MIN = user = 0
@@ -754,12 +753,12 @@ class BoardClass:
                     """
                     if((moveTokenHuman + placeTokenHuman + moveTokenAI + placeTokenAI) % 2 != 0):
                         current_turn = 'O'
-                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
+                        moveTokenHuman, placeTokenHuman, stop_game, losing_on_move, coordinate = self.Human_turn(current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move)
 
                     else:
                         current_turn = 'X'
                         tree_board = self.board
-                        current_node = Node(tree_board, 'E10')
+                        current_node = Node(tree_board, coordinate)
 
                         if first_run_AI is True:
                             placeTokenAI, moveTokenAI, stop_game = self.AI_turn(current_node, True, 3, tree_board, first_run_AI, float('inf'), float('-inf'), moveTokenAI, placeTokenAI, 'O')
@@ -1293,7 +1292,7 @@ class BoardClass:
             if potential_tile is not current_node.potential_coordinate:
                 if is_max is True:
                     if tree_board[potential_tile] == "_":
-                        tree_board[potential_tile] = 'X'
+                        #tree_board[potential_tile] = 'X'
                         child_node = Node(tree_board, potential_tile)
                         current_node.add_child(child_node)
                         tree_board1 = tree_board
@@ -1301,7 +1300,7 @@ class BoardClass:
                         for pot_tile in tree_board1:
                             if pot_tile is not current_node.potential_coordinate:
                                 if tree_board1[pot_tile] == "_":
-                                    tree_board1[pot_tile] = 'O'
+                                    #tree_board1[pot_tile] = 'O'
                                     child_node1 = Node(tree_board1, pot_tile)
                                     child_node.add_child(child_node1)
                                     tree_board2 = tree_board1
@@ -1309,19 +1308,19 @@ class BoardClass:
                                     for po_tile in tree_board2:
                                         if po_tile is not current_node.potential_coordinate:
                                             if tree_board2[po_tile] == "_":
-                                                tree_board2[po_tile] = 'X'
+                                                #tree_board2[po_tile] = 'X'
                                                 child_node2 = Node(tree_board2, po_tile)
                                                 child_node1.add_child(child_node2)
 
                                                 tree_board2 = tree_board1
 
-                                    tree_board1 = tree_board
+                                    #tree_board1 = tree_board
 
                         tree_board = self.board
 
                 elif is_max is False:
                     if tree_board[potential_tile] == "_":
-                        tree_board[potential_tile] = 'O'
+                        #tree_board[potential_tile] = 'O'
                         child_node = Node(tree_board, potential_tile)
                         current_node.add_child(child_node)
                         tree_board1 = tree_board
@@ -1329,7 +1328,7 @@ class BoardClass:
                         for pot_tile in tree_board1:
                             if pot_tile is not current_node.potential_coordinate:
                                 if tree_board1[pot_tile] == "_":
-                                    tree_board1[pot_tile] = 'X'
+                                    #tree_board1[pot_tile] = 'X'
                                     child_node1 = Node(tree_board1, pot_tile)
                                     child_node.add_child(child_node1)
                                     tree_board2 = tree_board1
@@ -1337,7 +1336,7 @@ class BoardClass:
                                     for po_tile in tree_board2:
                                         if po_tile is not current_node.potential_coordinate:
                                             if tree_board2[po_tile] == "_":
-                                                tree_board2[po_tile] = 'O'
+                                                #tree_board2[po_tile] = 'O'
                                                 child_node2 = Node(tree_board2, po_tile)
                                                 child_node1.add_child(child_node2)
 
@@ -1346,6 +1345,7 @@ class BoardClass:
                                     tree_board1 = tree_board
 
                         tree_board = self.board
+        return current_node
 
 
     # want to keep tiles for depth of 3 when traversing possibilities
