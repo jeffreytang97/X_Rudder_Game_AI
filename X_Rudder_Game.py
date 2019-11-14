@@ -387,12 +387,12 @@ class BoardClass:
                             if current_turn == 'X':
                                 coordinate = input("Please input your coordinate (X's turn): \n")
                                 token = "X"
-                                stop_game = self.coordinate_selection(coordinate, token)
+                                stop_game, coordinate = self.coordinate_selection(coordinate, token)
                                 placeToken += 1
                             elif current_turn == 'O':
                                 coordinate = input("Please input your coordinate (O's turn): \n")
                                 token = "O"
-                                stop_game = self.coordinate_selection(coordinate, token)
+                                stop_game, coordinate = self.coordinate_selection(coordinate, token)
                                 placeToken += 1
                         else:
                             print("Sorry, you have reached the maximum amount of token.\n")
@@ -404,7 +404,7 @@ class BoardClass:
                         print('Number of moves used by both players combined: ', moveToken+1)
                         
                         if(moveToken < 30):
-                            stop_game, losing_on_move = self.coordinate_move(current_turn)
+                            stop_game, losing_on_move, destinationCoor = self.coordinate_move(current_turn)
                             moveToken += 1
                             limit_reached = False
                         else:
@@ -449,72 +449,44 @@ class BoardClass:
     
     """
     def Human_turn(self, current_turn, moveTokenHuman, placeTokenHuman, stop_game, losing_on_move):
-        
-        placeOrMove = input (current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
-        confirmChoice = 0
-        
-        """
-        Confirmation Block for each choice.
-        """
-        if(placeOrMove == "1" or placeOrMove == "2"):
-            while(confirmChoice != "1"):
-                # This is to prevent taking option 2 when no token is available to be moved    
-                if(placeTokenHuman < 1 and placeOrMove == "2"):
-                    placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
-                    while placeOrMove != "1":
-                        placeOrMove = input("Please press 1 to place your token.\n")
-                confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
-                if(confirmChoice == 1):
-                    break
-                else:
-                    while(placeOrMove != "1" or placeOrMove != "2" and confirmChoice != "1"):
-                        placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
-                        # This is to prevent taking option 2 when no token is available to be moved    
-                        if(placeTokenHuman < 1 and placeOrMove == "2"):
-                            placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
-                            while placeOrMove != "1":
-                                placeOrMove = input("Please press 1 to place your token.\n")
-                        confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
-                        if(confirmChoice == 1):
-                            break
-        else:
-            while(placeOrMove != "1" and placeOrMove != "2" and confirmChoice != "1"):
-                placeOrMove = input("Please press a valid key. (1 for placing token, 2 to move a token)\n")
-                # This is to prevent taking option 2 when no token is available to be moved    
-                if(placeTokenHuman < 1 and placeOrMove == "2"):
-                    placeOrMove = input ("Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
-                    while placeOrMove != "1":
-                        placeOrMove = input("Please press 1 to place your token.\n")
-                confirmChoice = input ("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
-                if(confirmChoice == 1):
-                    break
-        """
-        Confirmation Block ends here
-        """            
 
-        # When player selected to add a token   
-        if placeOrMove == "1":
-            if placeTokenHuman < 15:
-                # limit_reached = False
-                coordinate = input("Please input your coordinate (X's turn): \n")
-                token = current_turn
-                stop_game = self.coordinate_selection(coordinate, token)
-                placeTokenHuman += 1
-            else:
-                print("Sorry, you have reached the maximum amount of token.\n")
-                # limit_reached = True
-        
-        # When player selected to move a token           
-        elif placeOrMove == "2":
-            print('Number of moves used by you: ', moveTokenHuman+1)
-            if moveTokenHuman < 15:
-                stop_game, losing_on_game = self.coordinate_move(current_turn)
-                moveTokenHuman += 1
-                # limit_reached = False
-            else:
-                print("Sorry, we have reached the maximum total amount of moves permitted which is 15.\n")
-                # limit_reached = True
-                
+        confirmChoice = "0"
+        placeOrMove = "0"
+
+        # For invalid keys
+        while (placeOrMove != "1" and placeOrMove != "2") or confirmChoice != "1":
+            placeOrMove = input(current_turn + "'s turn: Press 1 to place a token or Press 2 to move a token.\n")
+            while(placeOrMove != "1" and placeOrMove != "2"):
+                placeOrMove = input("Please enter a valid key. (press 1 to place a token or press 2 to move a token)\n")
+            confirmChoice = input("Are you sure? Press 1 to confirm. Press any other key to go back. \n")
+
+        if (confirmChoice == "1"):
+            # This is to prevent taking option 2 when no token is available to be moved
+            if placeTokenHuman < 2 and placeOrMove == "2":
+                placeOrMove = input(
+                    "Your token has not been placed yet and cannot be moved. Therefore, please press 1 to place your token.\n")
+                while placeOrMove != "1":
+                    placeOrMove = input("Please press 1 to place your token.\n")
+
+            # When player selected to add a token
+            if placeOrMove is "1":
+                if (placeTokenHuman < 15):
+                    coordinate = input("Please input your coordinate (X's turn): \n")
+                    token = current_turn
+                    stop_game, coordinate = self.coordinate_selection(coordinate, token)
+                    placeTokenHuman += 1
+                else:
+                    print("Sorry, you have reached the maximum amount of token.\n")
+                    limit_reached = True
+
+            # When player selected to move a token
+            elif placeOrMove is "2":
+                print('Number of moves used by both players combined: ', moveTokenHuman + 1)
+                if (moveTokenHuman < 15):
+                    stop_game, losing_on_move, coordinate = self.coordinate_move(current_turn)
+                    moveTokenHuman += 1
+                else:
+                    print("Sorry, we have reached the maximum total amount of moves permitted.\n")
         
         """
         Return values to check the Winning conditions.
@@ -564,7 +536,6 @@ class BoardClass:
             # it would loop to the tree that was generated to find the best heuristic
             for branch_node in current_node.children:
                 # self.calculate_heuristic(branch_node) == best_heuristic
-                # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
                 # if best_heuristic - 1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 1:
 
                 current_heuristic = self.calculate_heuristic(branch_node)
@@ -694,9 +665,6 @@ class BoardClass:
                         """
                         WILL NEED TO CALL THE AI HERE.
                         """
-
-
-
                     """
                     Below will check the condition of the game if it has ended and who's the winner.
                     Takes in the returned values from the method "Human_turn" and verify with the conditions below.
@@ -856,7 +824,7 @@ class BoardClass:
         stop_game = self.addCoordinate(destinationCoor, token_to_move)
         self.print_board()
         
-        return stop_game, losing_on_move
+        return stop_game, losing_on_move, destinationCoor
     
     def check_losing_on_move(self, column, new_row, opposite_token):
         target_coord = column + str(new_row)
@@ -885,7 +853,7 @@ class BoardClass:
         # Calling member function within a class, gotta use self
         stop_game = self.addCoordinate(coordinate, token)
         self.print_board()
-        return stop_game
+        return stop_game, coordinate
         
         
     def addCoordinate(self, coordinate, token):
