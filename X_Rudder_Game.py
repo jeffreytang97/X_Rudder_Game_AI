@@ -558,25 +558,31 @@ class BoardClass:
             Place the coordinate.
             Increment placeTokenAI
             """
-            AI_coordinate_placement = 'E10'
+            list_of_heuristics_in_order = []
+            list_of_current_nodes = []
 
-
-            # cnode = Node(self.board, 'E5')
-            # h = self.calculate_heuristic(cnode)
-            # print('h:')
-            # print(h)
-            #
-            # poss = self.determine_possibilities_for_one_tile(cnode)
-            # print(poss)
-            #
-            # print('best')
-            # print(best_heuristic)
-
+            # it would loop to the tree that was generated to find the best heuristic
             for branch_node in current_node.children:
                 # self.calculate_heuristic(branch_node) == best_heuristic
                 # alternatively, if best_heuristic - 0.1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 0.1
-                if best_heuristic - 1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 1:
-                    AI_coordinate_placement = branch_node.potential_coordinate
+                # if best_heuristic - 1 <= self.calculate_heuristic(branch_node) <= best_heuristic + 1:
+
+                current_heuristic = self.calculate_heuristic(branch_node)
+
+                # by inserting in list at same time, the heuristics and nodes will be linked with the same index number
+                list_of_heuristics_in_order.append(current_heuristic)
+                list_of_current_nodes.append(branch_node)
+
+            if is_max is True:
+                # means that AI is X, we want to take the highest heuristic possible
+                max_position = list_of_heuristics_in_order.index(max(list_of_heuristics_in_order))
+                best_node = list_of_current_nodes[max_position]
+            else:
+                # means that AI is O, we want to take the lowest heuristic possible
+                min_position = list_of_heuristics_in_order.index(max(list_of_heuristics_in_order))
+                best_node = list_of_current_nodes[min_position]
+
+            AI_coordinate_placement = best_node.potential_coordinate
 
             placeTokenAI += 1
             # print('HERE' + AI_coordinate_placement)
@@ -791,8 +797,6 @@ class BoardClass:
                         break
                     
                     print(moveTokenHuman + moveTokenAI + placeTokenHuman + placeTokenAI)
-                  
-                
     
     def coordinate_move(self, current_turn):
         dict = self.board
@@ -1292,109 +1296,108 @@ class BoardClass:
 
         for potential_tile in tree_board:
             j = 0
-            if first_run == False:
-                coordinate = current_node.potential_coordinate
-                column, row = self.seperate_coordinate_values(coordinate)
-                # To get column C if we added a token in column A for example
-                two_on_the_right_column = chr(ord(column) + 2)
-                # To get move 2 column to the left
-                two_on_the_left_column = chr(ord(column) - 2)
-                # To get middle column of the formed X on left
-                X_one_column_left = chr(ord(column) - 1)
-                # To get the middle column of the formed X on right
-                X_one_column_right = chr(ord(column) + 1)
-                # to get the coordinates of two rows above
-                two_row_up = int(row) + 2
-                # to get the coordinates of two rows below
-                two_row_down = int(row) - 2
-                # To get the center tile of the possible X formed above
-                X_one_row_up = int(row) + 1
-                # to get the center tile of the possible X formed below
-                X_one_row_down = int(row) - 1
-
-                """This is all the set of coordinates around the root node coordinate to be checked to add a tile"""
-                coord1 = (two_on_the_left_column) + str(two_row_down)
-                coord2 = (two_on_the_left_column) + str(X_one_row_down)
-                coord3 = (two_on_the_left_column) + row
-                coord4 = (two_on_the_left_column) + str(X_one_row_up)
-                coord5 = (two_on_the_left_column) + str(two_row_up)
-
-                coord6 = (X_one_column_left) + str(two_row_down)
-                coord7 = (X_one_column_left) + str(X_one_row_down)
-                coord8 = (X_one_column_left) + row
-                coord9 = (X_one_column_left) + str(X_one_row_up)
-                coord10 = (X_one_column_left) + str(two_row_up)
-
-                coord11 = column + str(two_row_down)
-                coord12 = column + str(X_one_row_down)
-                coord13 = column + str(X_one_row_up)
-                coord14 = column + str(two_row_up)
-
-                coord15 = (X_one_column_right) + str(two_row_down)
-                coord16 = (X_one_column_right) + str(X_one_row_down)
-                coord17 = (X_one_column_right) + row
-                coord18 = (X_one_column_right) + str(X_one_row_up)
-                coord19 = (X_one_column_right) + str(two_row_up)
-
-                coord20 = (two_on_the_right_column) + str(two_row_down)
-                coord21 = (two_on_the_right_column) + str(X_one_row_down)
-                coord22 = (two_on_the_right_column) + row
-                coord23 = (two_on_the_right_column) + str(X_one_row_up)
-                coord24 = (two_on_the_right_column) + str(two_row_up)
-
-                # add all the surroundings coordinates inside a list.
-                surrounding_coord_list = [coord1, coord2, coord3, coord4, coord5, coord6, coord7, coord8, coord9,
-                                          coord10, coord11, coord12, coord13, coord14, coord15, coord16, coord17,
-                                          coord18, coord19, coord20, coord21, coord22, coord23, coord24]
-
             # only add tiles in the tree that are from the surrounding of the previous player tile choice
-            if (potential_tile in surrounding_coord_list) or first_run == True:
-                if potential_tile is not current_node.potential_coordinate:
-                    if is_max is True:
-                        if tree_board[potential_tile] == "_":
-                            tree_board[potential_tile] = 'X'
-                            child_node = Node(tree_board, potential_tile)
-                            current_node.add_child(child_node)
-                            tree_board[potential_tile] = '_'                                # reset the board to the present state
-                            closed_list.append(potential_tile)
+            if potential_tile is not current_node.potential_coordinate:
+                if is_max is True:
+                    if tree_board[potential_tile] == "_":
+                        tree_board[potential_tile] = 'X'
+                        child_node = Node(tree_board, potential_tile)
+                        current_node.add_child(child_node)
+                        tree_board[potential_tile] = '_'                                # reset the board to the present state
+                        closed_list.append(potential_tile)
 
-                            for pot_tile in child_node.potential_board:
-                                size_of_dict = len(child_node.potential_board)
-                                if pot_tile is not current_node.potential_coordinate:
-                                    if pot_tile in closed_list:
-                                        # already visited
-                                        pass
-                                    else:
-                                        if tree_board[pot_tile] == "_":
-                                            tree_board[pot_tile] = 'O'
-                                            child_node1 = Node(tree_board, pot_tile)
-                                            child_node.add_child(child_node1)
-                                            tree_board[pot_tile] = '_'
-                                            closed_list.append(pot_tile)
+                        for pot_tile in child_node.potential_board:
+                            size_of_dict = len(child_node.potential_board)
+                            if pot_tile is not current_node.potential_coordinate:
+                                if pot_tile in closed_list:
+                                    # already visited
+                                    pass
+                                else:
+                                    if tree_board[pot_tile] == "_":
+                                        tree_board[pot_tile] = 'O'
+                                        child_node1 = Node(tree_board, pot_tile)
+                                        child_node.add_child(child_node1)
+                                        tree_board[pot_tile] = '_'
+                                        closed_list.append(pot_tile)
 
-                                            for po_tile in child_node1.potential_board:
-                                                size_of_dict1 = len(child_node1.potential_board)
-                                                if po_tile is not current_node.potential_coordinate:
-                                                    if po_tile in closed_list:
-                                                        # already visited
-                                                        pass
-                                                    else:
-                                                        if tree_board[po_tile] == "_":
-                                                            tree_board[po_tile] = 'X'
-                                                            child_node2 = Node(tree_board, po_tile)
-                                                            child_node1.add_child(child_node2)
-                                                            tree_board[po_tile] = '_'
-                                                            closed_list.append(po_tile)
-                                                if (k == size_of_dict1 - 1):
-                                                    # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
-                                                    closed_list = []
-                                                k += 1
-                                if (j == size_of_dict - 1):
-                                    # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
-                                    closed_list = []
-                                j += 1
+                                        for po_tile in child_node1.potential_board:
+                                            size_of_dict1 = len(child_node1.potential_board)
+                                            if po_tile is not current_node.potential_coordinate:
+                                                if po_tile in closed_list:
+                                                    # already visited
+                                                    pass
+                                                else:
+                                                    if tree_board[po_tile] == "_":
+                                                        tree_board[po_tile] = 'X'
+                                                        child_node2 = Node(tree_board, po_tile)
+                                                        child_node1.add_child(child_node2)
+                                                        tree_board[po_tile] = '_'
+                                                        closed_list.append(po_tile)
+                                            if (k == size_of_dict1 - 1):
+                                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                                closed_list = []
+                                            k += 1
+                            if (j == size_of_dict - 1):
+                                # if the for loop reaches the last element in dictionary, then clear the closed_list because we need it for other branches in the tree
+                                closed_list = []
+                            j += 1
 
-                    elif is_max is False:
+                elif is_max is False:
+                    coordinate = current_node.potential_coordinate
+                    column, row = self.seperate_coordinate_values(coordinate)
+                    # To get column C if we added a token in column A for example
+                    two_on_the_right_column = chr(ord(column) + 2)
+                    # To get move 2 column to the left
+                    two_on_the_left_column = chr(ord(column) - 2)
+                    # To get middle column of the formed X on left
+                    X_one_column_left = chr(ord(column) - 1)
+                    # To get the middle column of the formed X on right
+                    X_one_column_right = chr(ord(column) + 1)
+                    # to get the coordinates of two rows above
+                    two_row_up = int(row) + 2
+                    # to get the coordinates of two rows below
+                    two_row_down = int(row) - 2
+                    # To get the center tile of the possible X formed above
+                    X_one_row_up = int(row) + 1
+                    # to get the center tile of the possible X formed below
+                    X_one_row_down = int(row) - 1
+
+                    """This is all the set of coordinates around the root node coordinate to be checked to add a tile"""
+                    coord1 = (two_on_the_left_column) + str(two_row_down)
+                    coord2 = (two_on_the_left_column) + str(X_one_row_down)
+                    coord3 = (two_on_the_left_column) + row
+                    coord4 = (two_on_the_left_column) + str(X_one_row_up)
+                    coord5 = (two_on_the_left_column) + str(two_row_up)
+
+                    coord6 = (X_one_column_left) + str(two_row_down)
+                    coord7 = (X_one_column_left) + str(X_one_row_down)
+                    coord8 = (X_one_column_left) + row
+                    coord9 = (X_one_column_left) + str(X_one_row_up)
+                    coord10 = (X_one_column_left) + str(two_row_up)
+
+                    coord11 = column + str(two_row_down)
+                    coord12 = column + str(X_one_row_down)
+                    coord13 = column + str(X_one_row_up)
+                    coord14 = column + str(two_row_up)
+
+                    coord15 = (X_one_column_right) + str(two_row_down)
+                    coord16 = (X_one_column_right) + str(X_one_row_down)
+                    coord17 = (X_one_column_right) + row
+                    coord18 = (X_one_column_right) + str(X_one_row_up)
+                    coord19 = (X_one_column_right) + str(two_row_up)
+
+                    coord20 = (two_on_the_right_column) + str(two_row_down)
+                    coord21 = (two_on_the_right_column) + str(X_one_row_down)
+                    coord22 = (two_on_the_right_column) + row
+                    coord23 = (two_on_the_right_column) + str(X_one_row_up)
+                    coord24 = (two_on_the_right_column) + str(two_row_up)
+
+                    # add all the surroundings coordinates inside a list.
+                    surrounding_coord_list = [coord1, coord2, coord3, coord4, coord5, coord6, coord7, coord8, coord9,
+                                              coord10, coord11, coord12, coord13, coord14, coord15, coord16, coord17,
+                                              coord18, coord19, coord20, coord21, coord22, coord23, coord24]
+
+                    if (potential_tile in surrounding_coord_list):
                         if tree_board[potential_tile] == "_":
                             tree_board[potential_tile] = 'O'
                             child_node = Node(tree_board, potential_tile)
